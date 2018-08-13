@@ -1,5 +1,6 @@
 const initialState = {
-  selectedTile: null
+  selectedTile: null,
+  hoverTile: null
 }
 
 const gameReducer = (state = initialState, action) => {
@@ -13,6 +14,14 @@ const gameReducer = (state = initialState, action) => {
 
     return Object.assign({}, state, {
       selectedTile: newValue
+    })
+  }
+
+  if (action.type === 'HOVER_TILE')
+  {
+    let newValue = action.payload;
+    return Object.assign({}, state, {
+      hoverTile: newValue
     })
   }
 

@@ -1,0 +1,19 @@
+.arrowLineA_enemy {
+  background: linear-gradient(to top right, transparent calc(50% - 2px), #ff6666, transparent calc(50% + 2px) );
+  cursor: pointer;
+}
+
+.arrowLineB_enemy {
+  background: linear-gradient(to top left, transparent calc(50% - 2px), #ff6666, transparent calc(50% + 2px) );
+  cursor: pointer;
+}
+
+.arrowLineA_friend {
+  background: linear-gradient(to top right, transparent calc(50% - 2px), #66ccff, transparent calc(50% + 2px) );
+  cursor: pointer;
+}
+
+.arrowLineB_friend {
+  background: linear-gradient(to top left, transparent calc(50% - 2px), #66ccff, transparent calc(50% + 2px) );
+  cursor: pointer;
+}

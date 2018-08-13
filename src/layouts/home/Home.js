@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import { AccountData, ContractData, ContractForm } from 'drizzle-react-components'
 import logo from '../../logo.png'
-import { selectTile } from '../../game/gameActions'
+import { selectTile, hoverTile } from '../../game/gameActions'
+import ArrowControl from '../../game/ArrowControl';
 
 class Home extends Component {
 
@@ -10,12 +11,31 @@ class Home extends Component {
 
         // This binding is necessary to make `this` work in the callback
         this.selectTile = this.selectTile.bind(this);
+        this.cancelTile = this.cancelTile.bind(this);
+        this.hoverTile = this.hoverTile.bind(this);
+        this.cancelHover = this.cancelHover.bind(this);
     }
 
     selectTile(event) {
       event.preventDefault();
       let id = event.currentTarget.id;
       this.props.dispatch(selectTile(id));
+    }
+
+    cancelTile(event) {
+      event.preventDefault();
+      this.props.dispatch(selectTile(null));
+    }
+
+    hoverTile(event) {
+      event.preventDefault();
+      let id = event.currentTarget.id;
+      this.props.dispatch(hoverTile(id));
+    }
+
+    cancelHover(event) {
+      event.preventDefault();
+      this.props.dispatch(hoverTile(null));
     }
 
     getColor(colorIndex) {
@@ -37,6 +57,7 @@ class Home extends Component {
     render() {
 
         let selectedTile = this.props.game.selectedTile;
+        let hoverTile = this.props.game.hoverTile;
 
         let colorIndex = 0;
         let mapTiles = [];
@@ -356,6 +377,8 @@ class Home extends Component {
             soliders: 1
         });
 
+        let selectedTeam = "";
+        let selectedCenterPos = {left:0, top:0};
         let selectedNeighbors = {};
         for(let i=0; i<mapTiles.length; i++) {
           let tile = mapTiles[i];
@@ -363,9 +386,12 @@ class Home extends Component {
 
           if(isSelected) {
             selectedNeighbors = tile.neighbors;
+            selectedTeam = tile.owner;
+            selectedCenterPos = {left:tile.left + Math.floor(tile.width/2), top:tile.top + Math.floor(tile.height/2)};
           }
         }
 
+        let neighborCenterPosList = [];
         let renderedTiles = [];
         for(let i=0; i<mapTiles.length; i++) {
             let tile = mapTiles[i];
@@ -374,13 +400,41 @@ class Home extends Component {
             let topPos = Math.floor(Math.max(0, tile.height-90)/2)+5;
 
             let isSelected = (selectedTile === tile.id);
+            let hasHover = (hoverTile === tile.id);
 
             let isNeighbor = false;
             if(selectedNeighbors.hasOwnProperty(tile.id)) {
               isNeighbor = true;
             }
 
-            renderedTiles.push(<div onClick={this.selectTile} id={tile.id} key={tile.id} style={{position:"absolute", textAlign:"center", top:tile.top, left:tile.left, width:tile.width, height:tile.height, background:tile.color}}>{tile.name}{isNeighbor ? <img src={"/circle_red2.png"} alt="" style={{width:90, height:90, position:"absolute", top:(topPos-10), left:(leftPos-10)}}/> : null}{isSelected ? <img src={"/circle_green.png"} alt="" style={{width:90, height:90, position:"absolute", top:(topPos-10), left:(leftPos-10)}}/> : null}<div style={{width:70, height:90, textAlign:"center", position:"absolute", top:topPos, left:leftPos}}><img src={"/" + tile.owner + ".png"} alt="" style={{maxWidth:70, maxHeight:70}}/><div>{tile.soliders}</div></div><div style={{position:"absolute", bottom:0, left:0, color:"#000"}}><span>+{tile.points} </span><img src="/soldier.png" alt="" style={{maxWidth:20, maxHeight:20, verticalAlign:"top"}} /><span>/turn</span></div></div>);
+            let isFriendly = false;
+            if(selectedTeam === tile.owner) {
+              isFriendly = true;
+            }
+
+            if(isNeighbor) {
+              if(selectedTile === "hawaii" && tile.id === "fiji") {
+                neighborCenterPosList.push({isFriendly:isFriendly, shortenDest:false, x1:selectedCenterPos.left, y1:selectedCenterPos.top, x2:70, y2:selectedCenterPos.top+20});
+                neighborCenterPosList.push({isFriendly:isFriendly, shortenDest:false, x1:tile.left + Math.floor(tile.width/2), y1:tile.top + Math.floor(tile.height/2), x2:1775, y2:tile.top + Math.floor(tile.height/2)-20});
+              }
+              else if(selectedTile === "fiji" && tile.id === "hawaii") {
+                neighborCenterPosList.push({isFriendly:isFriendly, shortenDest:false, x1:selectedCenterPos.left, y1:selectedCenterPos.top, x2:1775, y2:selectedCenterPos.top-20});
+                neighborCenterPosList.push({isFriendly:isFriendly, shortenDest:false, x1:tile.left + Math.floor(tile.width/2), y1:tile.top + Math.floor(tile.height/2), x2:70, y2:tile.top + Math.floor(tile.height/2)+20});
+              }
+              else if(selectedTile === "western_canada" && tile.id === "eastern_russia") {
+                neighborCenterPosList.push({isFriendly:isFriendly, shortenDest:false, x1:selectedCenterPos.left, y1:selectedCenterPos.top, x2:70, y2:selectedCenterPos.top});
+                neighborCenterPosList.push({isFriendly:isFriendly, shortenDest:false, x1:tile.left + Math.floor(tile.width/2), y1:tile.top + Math.floor(tile.height/2), x2:1775, y2:tile.top + Math.floor(tile.height/2)});
+              }
+              else if(selectedTile === "eastern_russia" && tile.id === "western_canada") {
+                neighborCenterPosList.push({isFriendly:isFriendly, shortenDest:false, x1:selectedCenterPos.left, y1:selectedCenterPos.top, x2:1775, y2:selectedCenterPos.top});
+                neighborCenterPosList.push({isFriendly:isFriendly, shortenDest:false, x1:tile.left + Math.floor(tile.width/2), y1:tile.top + Math.floor(tile.height/2), x2:70, y2:tile.top + Math.floor(tile.height/2)});
+              }
+              else {
+                neighborCenterPosList.push({isFriendly:isFriendly, shortenDest:true, x1:selectedCenterPos.left, y1:selectedCenterPos.top, x2:tile.left + Math.floor(tile.width/2), y2:tile.top + Math.floor(tile.height/2)});
+              }
+            }
+
+          renderedTiles.push(<div onMouseEnter={this.hoverTile} onMouseLeave={this.cancelHover} onClick={this.selectTile} id={tile.id} key={tile.id} style={{cursor:"pointer", position:"absolute", textAlign:"center", top:tile.top, left:tile.left, width:tile.width, height:tile.height, background:tile.color}}>{tile.name}{(isNeighbor && hasHover && isFriendly) ? <div style={{position:"absolute", zIndex:10, color:"#00cc00", background:"rgba(0,0,0,0.7)", textAlign:"center", width:90, padding:10, fontSize:24, top:(topPos+10), left:(leftPos-20)}}>MOVE</div> : null}{(isNeighbor && hasHover && !isFriendly) ? <div style={{position:"absolute", zIndex:10, color:"#ff0000", background:"rgba(0,0,0,0.7)", textAlign:"center", width:90, padding:10, fontSize:24, top:(topPos+10), left:(leftPos-20)}}>ATTACK</div> : null}{(isNeighbor && isFriendly) ? <img src={"/circle_lightblue.png"} alt="" style={{width:90, height:90, position:"absolute", top:(topPos-10), left:(leftPos-10)}}/> : null}{(isNeighbor && !isFriendly) ? <img src={"/circle_red2.png"} alt="" style={{width:90, height:90, position:"absolute", top:(topPos-10), left:(leftPos-10)}}/> : null}{isSelected ? <img src={"/circle_green.png"} alt="" style={{width:90, height:90, position:"absolute", top:(topPos-10), left:(leftPos-10)}}/> : null}<div style={{width:70, height:90, textAlign:"center", position:"absolute", top:topPos, left:leftPos}}><img src={"/" + tile.owner + ".png"} alt="" style={{maxWidth:70, maxHeight:70}}/><div>{tile.soliders}</div></div>{hasHover ? <div style={{position:"absolute", bottom:0, left:0, color:"#000"}}><span>+{tile.points} </span><img src="/soldier.png" alt="" style={{maxWidth:20, maxHeight:20, verticalAlign:"top"}} /><span>/turn</span></div> : null}</div>);
         }
 
         let renderedGaps = [];
@@ -389,11 +443,18 @@ class Home extends Component {
             renderedGaps.push(<div key={i} style={{position:"absolute", top:tile.top, left:tile.left, width:tile.width, height:tile.height, background:"rgba(64, 196, 255, 0.3)"}}></div>);
         }
 
+        let renderedArrows = [];
+        for(let i=0; i<neighborCenterPosList.length; i++) {
+            let neighborCenterPos = neighborCenterPosList[i];
+            renderedArrows.push(<ArrowControl isFriendly={neighborCenterPos.isFriendly} shortenDest={neighborCenterPos.shortenDest} onClick={this.cancelTile} key={i} x1={neighborCenterPos.x1} y1={neighborCenterPos.y1} x2={neighborCenterPos.x2} y2={neighborCenterPos.y2} />);
+        }
+
         return (
         <main>
             <div style={{background:"url('/world_blank.png')", width:1879, height:953, position:"relative"}} >
                 {renderedTiles}
-                {renderedGaps}                   
+                {renderedGaps}   
+                {renderedArrows}               
             </div>
             <br/><br/>
 

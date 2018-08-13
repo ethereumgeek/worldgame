@@ -12,3 +12,15 @@ export function selectTile(val) {
     });
   }
 }
+
+export function hoverTile(val) {
+  return function(dispatch) {
+
+    console.log("HOVER_TILE: " + val);
+
+    dispatch({
+      type: 'HOVER_TILE',
+      payload: val
+    });
+  }
+}
