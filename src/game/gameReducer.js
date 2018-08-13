@@ -1,19 +1,18 @@
 const initialState = {
-  data: null
+  selectedTile: null
 }
 
 const gameReducer = (state = initialState, action) => {
-  if (action.type === 'USER_LOGGED_IN' || action.type === 'USER_UPDATED')
+  
+  if (action.type === 'SELECT_TILE')
   {
-    return Object.assign({}, state, {
-      data: action.payload
-    })
-  }
+    let newValue = action.payload;
+    if(state.selectedTile === action.payload) {
+      newValue = null;
+    }
 
-  if (action.type === 'USER_LOGGED_OUT')
-  {
     return Object.assign({}, state, {
-      data: null
+      selectedTile: newValue
     })
   }
 

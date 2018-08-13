@@ -1,8 +1,22 @@
 import React, { Component } from 'react'
 import { AccountData, ContractData, ContractForm } from 'drizzle-react-components'
 import logo from '../../logo.png'
+import { selectTile } from '../../game/gameActions'
 
 class Home extends Component {
+
+    constructor(props) {
+      super(props);
+
+        // This binding is necessary to make `this` work in the callback
+        this.selectTile = this.selectTile.bind(this);
+    }
+
+    selectTile(event) {
+      event.preventDefault();
+      let id = event.currentTarget.id;
+      this.props.dispatch(selectTile(id));
+    }
 
     getColor(colorIndex) {
         let redStrength = colorIndex % 4;
@@ -22,16 +36,7 @@ class Home extends Component {
 
     render() {
 
-        /*
-        const NORTH_AMERICA = 0;
-        const SOUTH_AMERICA = 1;
-        const EUROPE = 2;
-        const ASIA = 3;
-        const AFRICA = 4;
-        const AUSTRALIA = 5;
-        const ZEALANDIA = 6;
-        const ANTARCTICA = 7;
-        */
+        let selectedTile = this.props.game.selectedTile;
 
         let colorIndex = 0;
         let mapTiles = [];
@@ -351,35 +356,38 @@ class Home extends Component {
             soliders: 1
         });
 
+        let selectedNeighbors = {};
+        for(let i=0; i<mapTiles.length; i++) {
+          let tile = mapTiles[i];
+          let isSelected = (selectedTile === tile.id);
+
+          if(isSelected) {
+            selectedNeighbors = tile.neighbors;
+          }
+        }
+
         let renderedTiles = [];
         for(let i=0; i<mapTiles.length; i++) {
             let tile = mapTiles[i];
 
             let leftPos = Math.floor(Math.max(0, tile.width-70)/2);
-            let topPos = Math.floor(Math.max(0, tile.height-90)/2)+5;            
-            renderedTiles.push(<div id={tile.id} style={{position:"absolute", textAlign:"center", top:tile.top, left:tile.left, width:tile.width, height:tile.height, background:tile.color}}>{tile.name}<div style={{width:70, height:90, textAlign:"center", position:"absolute", top:topPos, left:leftPos}}><img src={"/" + tile.owner + ".png"} alt="" style={{maxWidth:70, maxHeight:70}}/><div>{tile.soliders}</div></div><div style={{position:"absolute", bottom:0, left:0, color:"#000"}}><span>+{tile.points} </span><img src="/soldier.png" alt="" style={{maxWidth:20, maxHeight:20, verticalAlign:"top"}} /><span>/turn</span></div></div>);
+            let topPos = Math.floor(Math.max(0, tile.height-90)/2)+5;
+
+            let isSelected = (selectedTile === tile.id);
+
+            let isNeighbor = false;
+            if(selectedNeighbors.hasOwnProperty(tile.id)) {
+              isNeighbor = true;
+            }
+
+            renderedTiles.push(<div onClick={this.selectTile} id={tile.id} key={tile.id} style={{position:"absolute", textAlign:"center", top:tile.top, left:tile.left, width:tile.width, height:tile.height, background:tile.color}}>{tile.name}{isNeighbor ? <img src={"/circle_red2.png"} alt="" style={{width:90, height:90, position:"absolute", top:(topPos-10), left:(leftPos-10)}}/> : null}{isSelected ? <img src={"/circle_green.png"} alt="" style={{width:90, height:90, position:"absolute", top:(topPos-10), left:(leftPos-10)}}/> : null}<div style={{width:70, height:90, textAlign:"center", position:"absolute", top:topPos, left:leftPos}}><img src={"/" + tile.owner + ".png"} alt="" style={{maxWidth:70, maxHeight:70}}/><div>{tile.soliders}</div></div><div style={{position:"absolute", bottom:0, left:0, color:"#000"}}><span>+{tile.points} </span><img src="/soldier.png" alt="" style={{maxWidth:20, maxHeight:20, verticalAlign:"top"}} /><span>/turn</span></div></div>);
         }
 
         let renderedGaps = [];
         for(let i=0; i<gapTiles.length; i++) {
             let tile = gapTiles[i];
-            renderedGaps.push(<div style={{position:"absolute", top:tile.top, left:tile.left, width:tile.width, height:tile.height, background:"rgba(64, 196, 255, 0.3)"}}></div>);
+            renderedGaps.push(<div key={i} style={{position:"absolute", top:tile.top, left:tile.left, width:tile.width, height:tile.height, background:"rgba(64, 196, 255, 0.3)"}}></div>);
         }
-
-        /*
-            <img style={{position:"absolute", top:510, left:940, maxWidth:100, maxHeight:100}} alt="Elephant" src="/elephant.png" />
-            <img style={{position:"absolute", top:670, left:1600, maxWidth:100, maxHeight:100}} alt="Unicorn" src="/unicorn.png" />
-            <img style={{position:"absolute", top:90, left:1230, maxWidth:100, maxHeight:100}} alt="Grizzly" src="/grizzly.png" />
-            <img style={{position:"absolute", top:210, left:400, maxWidth:100, maxHeight:100}} alt="Eagle" src="/eagle.png" />
-            <img style={{position:"absolute", top:110, left:450, maxWidth:100, maxHeight:100}} alt="Moose" src="/moose.png" />
-            <img style={{position:"absolute", top:800, left:900, maxWidth:100, maxHeight:100}} alt="Penguin" src="/penguin.png" />
-            <img style={{position:"absolute", top:330, left:940, maxWidth:100, maxHeight:100}} alt="Zebra" src="/zebra.png" />
-            <img style={{position:"absolute", top:230, left:1300, maxWidth:100, maxHeight:100}} alt="Panda" src="/panda.png" />
-            <img style={{position:"absolute", top:500, left:560, maxWidth:100, maxHeight:100}} alt="Goat" src="/goat.png" />
-            <img style={{position:"absolute", top:550, left:1450, maxWidth:100, maxHeight:100}} alt="Kangaroo" src="/kangaroo.png" />
-            <img style={{position:"absolute", top:150, left:900, maxWidth:100, maxHeight:100}} alt="Squirrel" src="/squirrel.png" />
-            <img style={{position:"absolute", top:50, left:700, maxWidth:100, maxHeight:100}} alt="Bird" src="/bird.png" /> 
-        */
 
         return (
         <main>
