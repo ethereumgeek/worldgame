@@ -38,7 +38,8 @@ class Home extends Component {
         let gapTiles = [];
 
         gapTiles.push({top:220, left:70, width:200, height:90});
-        gapTiles.push({top: 410, left: 70, width: 370, height: 370});
+        gapTiles.push({top: 430, left: 70, width: 370, height: 350});
+        gapTiles.push({top: 410, left: 270, width: 170, height: 20});
         gapTiles.push({top: 780, left: 70, width: 250, height: 130});
         gapTiles.push({top: 220, left: 670, width: 160, height: 60});
         gapTiles.push({top: 280, left: 670, width: 110, height: 130});
@@ -47,17 +48,17 @@ class Home extends Component {
         gapTiles.push({top: 720, left: 1370, width: 210, height: 60});
         gapTiles.push({top: 520, left: 1180, width: 190, height: 140});
         gapTiles.push({top: 450, left: 1180, width: 110, height: 70});
-        gapTiles.push({top: 830, left: 1580, width: 190, height: 80});
-        gapTiles.push({top: 210, left: 1580, width: 190, height: 190});
+        gapTiles.push({top: 830, left: 1580, width: 195, height: 80});
+        gapTiles.push({top: 210, left: 1580, width: 195, height: 150});
 
         mapTiles.push({
-            top:310, left:70, width:200, height:100,
+            top:310, left:70, width:200, height:120,
             color:this.getColor(colorIndex++),
             continent:"north_america",
             name:"Hawaii",
             id:"hawaii",
             neighbors:{western_usa:true, fiji:true},
-            points: 5,
+            points: 3,
             owner: "eagle",
             soliders: 1
         });
@@ -69,7 +70,7 @@ class Home extends Component {
             name:"Western Canada and Alaska",
             id:"western_canada",
             neighbors:{western_usa:true, eastern_canada:true, eastern_russia:true},
-            points: 5,
+            points: 6,
             owner: "moose",
             soliders: 1
         });
@@ -93,7 +94,7 @@ class Home extends Component {
             name:"Western United States and Mexico",
             id:"western_usa",
             neighbors:{hawaii:true, western_canada:true, eastern_usa:true, northern_south_america:true},
-            points: 5,
+            points: 11,
             owner: "eagle",
             soliders: 1
         });
@@ -105,7 +106,7 @@ class Home extends Component {
             name:"Easter United States and Caribbean",
             id:"eastern_usa",
             neighbors:{western_usa:true, eastern_canada:true, northern_south_america:true},
-            points: 5,
+            points: 8,
             owner: "eagle",
             soliders: 1
         });
@@ -117,7 +118,7 @@ class Home extends Component {
             name:"Greenland",
             id:"greenland",
             neighbors:{eastern_canada:true, western_europe:true},
-            points: 5,
+            points: 3,
             owner: "bird",
             soliders: 1
         });
@@ -126,10 +127,10 @@ class Home extends Component {
             top:410, left:440, width:300, height:180,
             color:this.getColor(colorIndex++),
             continent:"south_america",
-            name:"Brazil, Peru and Northern South America",
+            name:"Brazil, Peru and the Amazon Basin",
             id:"northern_south_america",
             neighbors:{western_usa:true, eastern_usa:true, southern_south_america:true},
-            points: 5,
+            points: 3,
             owner: "goat",
             soliders: 1
         });
@@ -141,7 +142,7 @@ class Home extends Component {
             name:"Argentina, Chile and the Southern Cone",
             id:"southern_south_america",
             neighbors:{northern_south_america:true, west_antarctica:true},
-            points: 5,
+            points: 4,
             owner: "goat",
             soliders: 1
         });
@@ -153,7 +154,7 @@ class Home extends Component {
             name:"West Antarctica",
             id:"west_antarctica",
             neighbors:{southern_south_america:true, east_antarctica:true},
-            points: 5,
+            points: 2,
             owner: "penguin",
             soliders: 1
         });
@@ -165,7 +166,7 @@ class Home extends Component {
             name:"East Antarctica",
             id:"east_antarctica",
             neighbors:{west_antarctica:true, new_zealand:true},
-            points: 5,
+            points: 2,
             owner: "penguin",
             soliders: 1
         });
@@ -177,7 +178,7 @@ class Home extends Component {
             name:"Western Europe",
             id:"western_europe",
             neighbors:{greenland:true, eastern_europe:true, west_africa:true},
-            points: 5,
+            points: 10,
             owner: "squirrel",
             soliders: 1
         });
@@ -189,7 +190,7 @@ class Home extends Component {
             name:"Eastern Europe",
             id:"eastern_europe",
             neighbors:{western_europe:true, west_africa:true, middle_east:true, central_russia:true},
-            points: 5,
+            points: 6,
             owner: "grizzly",
             soliders: 1
         });
@@ -201,19 +202,19 @@ class Home extends Component {
             name:"Central Russia",
             id:"central_russia",
             neighbors:{eastern_europe:true, middle_east:true, india:true, eastern_china:true, eastern_russia:true},
-            points: 5,
+            points: 4,
             owner: "grizzly",
             soliders: 1
         });
 
         mapTiles.push({
-            top:30, left:1290, width:480, height:180,
+            top:30, left:1290, width:485, height:180,
             color:this.getColor(colorIndex++),
             continent:"asia",
             name:"Eastern Russia",
             id:"eastern_russia",
             neighbors:{eastern_china:true, central_russia:true, western_canada:true},
-            points: 5,
+            points: 3,
             owner: "grizzly",
             soliders: 1
         });
@@ -225,7 +226,7 @@ class Home extends Component {
             name:"West and Central Africa",
             id:"west_africa",
             neighbors:{western_europe:true, eastern_europe:true, middle_east:true, east_africa:true, south_africa:true},
-            points: 5,
+            points: 3,
             owner: "elephant",
             soliders: 1
         });
@@ -237,7 +238,7 @@ class Home extends Component {
             name:"Middle East",
             id:"middle_east",
             neighbors:{eastern_europe:true, central_russia:true, india:true, east_africa: true, west_africa:true },
-            points: 5,
+            points: 4,
             owner: "elephant",
             soliders: 1
         });
@@ -249,7 +250,7 @@ class Home extends Component {
             name:"East Africa",
             id:"east_africa",
             neighbors:{west_africa:true, south_africa:true, middle_east:true, india:true},
-            points: 5,
+            points: 3,
             owner: "zebra",
             soliders: 1
         });
@@ -273,7 +274,7 @@ class Home extends Component {
             name:"India",
             id:"india",
             neighbors:{east_africa:true, middle_east:true, central_russia:true, eastern_china:true, southeast_asia:true},
-            points: 5,
+            points: 7,
             owner: "elephant",
             soliders: 1
         });
@@ -285,7 +286,7 @@ class Home extends Component {
             name:"Eastern China",
             id:"eastern_china",
             neighbors:{india:true, central_russia:true, eastern_russia:true, southeast_asia:true},
-            points: 5,
+            points: 10,
             owner: "panda",
             soliders: 1
         });
@@ -309,7 +310,7 @@ class Home extends Component {
             name:"Western Australia",
             id:"western_australia",
             neighbors:{eastern_australia:true, southeast_asia:true},
-            points: 5,
+            points: 4,
             owner: "kangaroo",
             soliders: 1
         });
@@ -321,31 +322,31 @@ class Home extends Component {
             name:"Eastern Australia",
             id:"eastern_australia",
             neighbors:{western_australia:true, southeast_asia:true, fiji:true, new_zealand:true},
-            points: 5,
+            points: 6,
             owner: "kangaroo",
             soliders: 1
         });
 
         mapTiles.push({
-            top:630, left:1580, width:190, height:200,
+            top:630, left:1580, width:195, height:200,
             color:this.getColor(colorIndex++),
             continent:"zealandia",
             name:"New Zealand",
             id:"new_zealand",
             neighbors:{eastern_australia:true, fiji:true, east_antarctica:true},
-            points: 5,
+            points: 4,
             owner: "unicorn",
             soliders: 1
         });
 
         mapTiles.push({
-            top:400, left:1580, width:190, height:230,
+            top:360, left:1580, width:195, height:270,
             color:this.getColor(colorIndex++),
             continent:"zealandia",
             name:"Fiji and the Solomon Islands",
             id:"fiji",
             neighbors:{new_zealand:true, eastern_australia:true, southeast_asia:true, hawaii:true},
-            points: 5,
+            points: 2,
             owner: "unicorn",
             soliders: 1
         });
@@ -356,7 +357,7 @@ class Home extends Component {
 
             let leftPos = Math.floor(Math.max(0, tile.width-70)/2);
             let topPos = Math.floor(Math.max(0, tile.height-90)/2)+5;            
-            renderedTiles.push(<div id={tile.id} style={{position:"absolute", top:tile.top, left:tile.left, width:tile.width, height:tile.height, background:tile.color}}>{tile.name}<div style={{width:70, height:90, textAlign:"center", position:"absolute", top:topPos, left:leftPos}}><img src={"/" + tile.owner + ".png"} alt="" style={{maxWidth:70, maxHeight:70}}/><div>{tile.soliders}</div></div></div>);
+            renderedTiles.push(<div id={tile.id} style={{position:"absolute", textAlign:"center", top:tile.top, left:tile.left, width:tile.width, height:tile.height, background:tile.color}}>{tile.name}<div style={{width:70, height:90, textAlign:"center", position:"absolute", top:topPos, left:leftPos}}><img src={"/" + tile.owner + ".png"} alt="" style={{maxWidth:70, maxHeight:70}}/><div>{tile.soliders}</div></div><div style={{position:"absolute", bottom:0, left:0, color:"#000"}}><span>+{tile.points} </span><img src="/soldier.png" alt="" style={{maxWidth:20, maxHeight:20, verticalAlign:"top"}} /><span>/turn</span></div></div>);
         }
 
         let renderedGaps = [];
