@@ -56,6 +56,7 @@ class Home extends Component {
 
     render() {
 
+        let yourTeam = this.props.game.yourTeam;
         let selectedTile = this.props.game.selectedTile;
         let hoverTile = this.props.game.hoverTile;
 
@@ -85,7 +86,7 @@ class Home extends Component {
             id:"hawaii",
             neighbors:{western_usa:true, fiji:true},
             points: 3,
-            owner: "eagle",
+            team: "eagle",
             soliders: 1
         });
 
@@ -97,7 +98,7 @@ class Home extends Component {
             id:"western_canada",
             neighbors:{western_usa:true, eastern_canada:true, eastern_russia:true},
             points: 6,
-            owner: "moose",
+            team: "moose",
             soliders: 1
         });
 
@@ -109,7 +110,7 @@ class Home extends Component {
             id:"eastern_canada",
             neighbors:{western_canada:true, greenland:true, eastern_usa:true},
             points: 5,
-            owner: "moose",
+            team: "moose",
             soliders: 1
         });
         
@@ -121,7 +122,7 @@ class Home extends Component {
             id:"western_usa",
             neighbors:{hawaii:true, western_canada:true, eastern_usa:true, northern_south_america:true},
             points: 11,
-            owner: "eagle",
+            team: "eagle",
             soliders: 1
         });
 
@@ -133,7 +134,7 @@ class Home extends Component {
             id:"eastern_usa",
             neighbors:{western_usa:true, eastern_canada:true, northern_south_america:true},
             points: 8,
-            owner: "eagle",
+            team: "eagle",
             soliders: 1
         });
 
@@ -145,7 +146,7 @@ class Home extends Component {
             id:"greenland",
             neighbors:{eastern_canada:true, western_europe:true},
             points: 3,
-            owner: "bird",
+            team: "bird",
             soliders: 1
         });
 
@@ -157,7 +158,7 @@ class Home extends Component {
             id:"northern_south_america",
             neighbors:{western_usa:true, eastern_usa:true, southern_south_america:true},
             points: 3,
-            owner: "goat",
+            team: "goat",
             soliders: 1
         });
 
@@ -169,7 +170,7 @@ class Home extends Component {
             id:"southern_south_america",
             neighbors:{northern_south_america:true, west_antarctica:true},
             points: 4,
-            owner: "goat",
+            team: "goat",
             soliders: 1
         });
 
@@ -181,7 +182,7 @@ class Home extends Component {
             id:"west_antarctica",
             neighbors:{southern_south_america:true, east_antarctica:true},
             points: 2,
-            owner: "penguin",
+            team: "penguin",
             soliders: 1
         });
 
@@ -193,7 +194,7 @@ class Home extends Component {
             id:"east_antarctica",
             neighbors:{west_antarctica:true, new_zealand:true},
             points: 2,
-            owner: "penguin",
+            team: "penguin",
             soliders: 1
         });
 
@@ -205,7 +206,7 @@ class Home extends Component {
             id:"western_europe",
             neighbors:{greenland:true, eastern_europe:true, west_africa:true},
             points: 10,
-            owner: "squirrel",
+            team: "squirrel",
             soliders: 1
         });
 
@@ -217,7 +218,7 @@ class Home extends Component {
             id:"eastern_europe",
             neighbors:{western_europe:true, west_africa:true, middle_east:true, central_russia:true},
             points: 6,
-            owner: "grizzly",
+            team: "grizzly",
             soliders: 1
         });
 
@@ -229,7 +230,7 @@ class Home extends Component {
             id:"central_russia",
             neighbors:{eastern_europe:true, middle_east:true, india:true, eastern_china:true, eastern_russia:true},
             points: 4,
-            owner: "grizzly",
+            team: "grizzly",
             soliders: 1
         });
 
@@ -241,7 +242,7 @@ class Home extends Component {
             id:"eastern_russia",
             neighbors:{eastern_china:true, central_russia:true, western_canada:true},
             points: 3,
-            owner: "grizzly",
+            team: "grizzly",
             soliders: 1
         });
 
@@ -253,7 +254,7 @@ class Home extends Component {
             id:"west_africa",
             neighbors:{western_europe:true, eastern_europe:true, middle_east:true, east_africa:true, south_africa:true},
             points: 3,
-            owner: "elephant",
+            team: "elephant",
             soliders: 1
         });
 
@@ -265,7 +266,7 @@ class Home extends Component {
             id:"middle_east",
             neighbors:{eastern_europe:true, central_russia:true, india:true, east_africa: true, west_africa:true },
             points: 4,
-            owner: "elephant",
+            team: "elephant",
             soliders: 1
         });
 
@@ -277,7 +278,7 @@ class Home extends Component {
             id:"east_africa",
             neighbors:{west_africa:true, south_africa:true, middle_east:true, india:true},
             points: 3,
-            owner: "zebra",
+            team: "zebra",
             soliders: 1
         });
 
@@ -289,7 +290,7 @@ class Home extends Component {
             id:"south_africa",
             neighbors:{west_africa:true, east_africa:true},
             points: 5,
-            owner: "lion",
+            team: "lion",
             soliders: 1
         });
 
@@ -301,7 +302,7 @@ class Home extends Component {
             id:"india",
             neighbors:{east_africa:true, middle_east:true, central_russia:true, eastern_china:true, southeast_asia:true},
             points: 7,
-            owner: "elephant",
+            team: "elephant",
             soliders: 1
         });
 
@@ -313,7 +314,7 @@ class Home extends Component {
             id:"eastern_china",
             neighbors:{india:true, central_russia:true, eastern_russia:true, southeast_asia:true},
             points: 10,
-            owner: "panda",
+            team: "panda",
             soliders: 1
         });
 
@@ -325,7 +326,7 @@ class Home extends Component {
             id:"southeast_asia",
             neighbors:{india:true, eastern_china:true, western_australia:true, eastern_australia:true, fiji:true},
             points: 5,
-            owner: "monkey",
+            team: "monkey",
             soliders: 1
         });
 
@@ -337,7 +338,7 @@ class Home extends Component {
             id:"western_australia",
             neighbors:{eastern_australia:true, southeast_asia:true},
             points: 4,
-            owner: "kangaroo",
+            team: "kangaroo",
             soliders: 1
         });
 
@@ -349,7 +350,7 @@ class Home extends Component {
             id:"eastern_australia",
             neighbors:{western_australia:true, southeast_asia:true, fiji:true, new_zealand:true},
             points: 6,
-            owner: "kangaroo",
+            team: "kangaroo",
             soliders: 1
         });
 
@@ -361,7 +362,7 @@ class Home extends Component {
             id:"new_zealand",
             neighbors:{eastern_australia:true, fiji:true, east_antarctica:true},
             points: 4,
-            owner: "unicorn",
+            team: "unicorn",
             soliders: 1
         });
 
@@ -373,7 +374,7 @@ class Home extends Component {
             id:"fiji",
             neighbors:{new_zealand:true, eastern_australia:true, southeast_asia:true, hawaii:true},
             points: 2,
-            owner: "unicorn",
+            team: "unicorn",
             soliders: 1
         });
 
@@ -386,7 +387,7 @@ class Home extends Component {
 
           if(isSelected) {
             selectedNeighbors = tile.neighbors;
-            selectedTeam = tile.owner;
+            selectedTeam = tile.team;
             selectedCenterPos = {left:tile.left + Math.floor(tile.width/2), top:tile.top + Math.floor(tile.height/2)};
           }
         }
@@ -408,8 +409,13 @@ class Home extends Component {
             }
 
             let isFriendly = false;
-            if(selectedTeam === tile.owner) {
+            if(selectedTeam === tile.team) {
               isFriendly = true;
+            }
+
+            let isYourTeam = false;
+            if(yourTeam === tile.team) {
+              isYourTeam = true;
             }
 
             if(isNeighbor) {
@@ -434,7 +440,7 @@ class Home extends Component {
               }
             }
 
-          renderedTiles.push(<div onMouseEnter={this.hoverTile} onMouseLeave={this.cancelHover} onClick={this.selectTile} id={tile.id} key={tile.id} style={{cursor:"pointer", position:"absolute", textAlign:"center", top:tile.top, left:tile.left, width:tile.width, height:tile.height, background:tile.color}}>{tile.name}{(isNeighbor && hasHover && isFriendly) ? <div style={{position:"absolute", zIndex:10, color:"#00cc00", background:"rgba(0,0,0,0.7)", textAlign:"center", width:90, padding:10, fontSize:24, top:(topPos+10), left:(leftPos-20)}}>MOVE</div> : null}{(isNeighbor && hasHover && !isFriendly) ? <div style={{position:"absolute", zIndex:10, color:"#ff0000", background:"rgba(0,0,0,0.7)", textAlign:"center", width:90, padding:10, fontSize:24, top:(topPos+10), left:(leftPos-20)}}>ATTACK</div> : null}{(isNeighbor && isFriendly) ? <img src={"/circle_lightblue.png"} alt="" style={{width:90, height:90, position:"absolute", top:(topPos-10), left:(leftPos-10)}}/> : null}{(isNeighbor && !isFriendly) ? <img src={"/circle_red2.png"} alt="" style={{width:90, height:90, position:"absolute", top:(topPos-10), left:(leftPos-10)}}/> : null}{isSelected ? <img src={"/circle_green.png"} alt="" style={{width:90, height:90, position:"absolute", top:(topPos-10), left:(leftPos-10)}}/> : null}<div style={{width:70, height:90, textAlign:"center", position:"absolute", top:topPos, left:leftPos}}><img src={"/" + tile.owner + ".png"} alt="" style={{maxWidth:70, maxHeight:70}}/><div>{tile.soliders}</div></div>{hasHover ? <div style={{position:"absolute", bottom:0, left:0, color:"#000"}}><span>+{tile.points} </span><img src="/soldier.png" alt="" style={{maxWidth:20, maxHeight:20, verticalAlign:"top"}} /><span>/turn</span></div> : null}</div>);
+            renderedTiles.push(<div onMouseEnter={this.hoverTile} onMouseLeave={this.cancelHover} onClick={isYourTeam ? this.selectTile : null} id={tile.id} key={tile.id} style={{cursor:"pointer", position:"absolute", textAlign:"center", top:tile.top, left:tile.left, width:tile.width, height:tile.height, background:tile.color}}>{tile.name}{(isNeighbor && hasHover && isFriendly) ? <div style={{position:"absolute", zIndex:10, color:"#00cc00", background:"rgba(0,0,0,0.7)", textAlign:"center", width:90, padding:10, fontSize:24, top:(topPos+10), left:(leftPos-20)}}>MOVE</div> : null}{(isNeighbor && hasHover && !isFriendly) ? <div style={{position:"absolute", zIndex:10, color:"#ff0000", background:"rgba(0,0,0,0.7)", textAlign:"center", width:90, padding:10, fontSize:24, top:(topPos+10), left:(leftPos-20)}}>ATTACK</div> : null}{(isNeighbor && isFriendly) ? <img src={"/circle_lightblue.png"} alt="" style={{width:90, height:90, position:"absolute", top:(topPos-10), left:(leftPos-10)}}/> : null}{(isNeighbor && !isFriendly) ? <img src={"/circle_red2.png"} alt="" style={{width:90, height:90, position:"absolute", top:(topPos-10), left:(leftPos-10)}}/> : null}{isSelected ? <img src={"/circle_green.png"} alt="" style={{width:90, height:90, position:"absolute", top:(topPos-10), left:(leftPos-10)}}/> : null}<div style={{width:70, height:90, textAlign:"center", position:"absolute", top:topPos, left:leftPos}}><img src={"/" + tile.team + ".png"} alt="" style={{maxWidth:70, maxHeight:70}}/><div>{tile.soliders}</div></div>{hasHover ? <div style={{position:"absolute", bottom:0, left:0, color:"#000"}}><span>+{tile.points} </span><img src="/soldier.png" alt="" style={{maxWidth:20, maxHeight:20, verticalAlign:"top"}} /><span>/turn</span></div> : null}</div>);
         }
 
         let renderedGaps = [];

@@ -4,8 +4,6 @@
 export function selectTile(val) {
   return function(dispatch) {
 
-    console.log("SELECT_TILE: " + val);
-
     dispatch({
       type: 'SELECT_TILE',
       payload: val
@@ -16,10 +14,18 @@ export function selectTile(val) {
 export function hoverTile(val) {
   return function(dispatch) {
 
-    console.log("HOVER_TILE: " + val);
-
     dispatch({
       type: 'HOVER_TILE',
+      payload: val
+    });
+  }
+}
+
+export function chooseTeam(val) {
+  return function(dispatch) {
+
+    dispatch({
+      type: 'CHOOSE_TEAM',
       payload: val
     });
   }

@@ -1,6 +1,7 @@
 const initialState = {
   selectedTile: null,
-  hoverTile: null
+  hoverTile: null,
+  yourTeam: "eagle"
 }
 
 const gameReducer = (state = initialState, action) => {
@@ -22,6 +23,14 @@ const gameReducer = (state = initialState, action) => {
     let newValue = action.payload;
     return Object.assign({}, state, {
       hoverTile: newValue
+    })
+  }
+
+  if (action.type === 'CHOOSE_TEAM')
+  {
+    let newValue = action.payload;
+    return Object.assign({}, state, {
+      yourTeam: newValue
     })
   }
 
