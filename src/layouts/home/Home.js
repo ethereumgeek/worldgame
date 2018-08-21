@@ -471,7 +471,7 @@ class Home extends Component {
                     <img src={logo} alt="drizzle-logo" />
                     <h1>Drizzle Examples</h1>
                     <p>Examples of how to get started with Drizzle in various situations.</p>
-
+                    <ContractForm contract="WorldGame" method="newGame" labels={['playerCount', 'maxBlocksPerTurn', 'playerAddresses', 'teamAvatars']} />
                     <br/><br/>
                 </div>
 
