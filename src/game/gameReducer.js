@@ -1,7 +1,8 @@
 const initialState = {
   selectedTile: null,
   hoverTile: null,
-  yourTeam: "eagle"
+  yourTeam: "eagle",
+  web3Instance: null
 }
 
 const gameReducer = (state = initialState, action) => {

@@ -13,7 +13,8 @@
       ],
       "payable": false,
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "signature": "0x2a1afcd9"
     },
     {
       "anonymous": false,
@@ -25,7 +26,8 @@
         }
       ],
       "name": "StorageSet",
-      "type": "event"
+      "type": "event",
+      "signature": "0x60cdc157ca4737a5d39a0e107532616e7bf6946e615228812c7f9bc9f81797a6"
     },
     {
       "constant": false,
@@ -39,7 +41,8 @@
       "outputs": [],
       "payable": false,
       "stateMutability": "nonpayable",
-      "type": "function"
+      "type": "function",
+      "signature": "0x60fe47b1"
     }
   ],
   "bytecode": "0x608060405234801561001057600080fd5b50610122806100206000396000f30060806040526004361060485763ffffffff7c01000000000000000000000000000000000000000000000000000000006000350416632a1afcd98114604d57806360fe47b1146071575b600080fd5b348015605857600080fd5b50605f6088565b60408051918252519081900360200190f35b348015607c57600080fd5b506086600435608e565b005b60005481565b60008190556040805160208082526019908201527f446174612073746f726564207375636365737366756c6c7921000000000000008183015290517f60cdc157ca4737a5d39a0e107532616e7bf6946e615228812c7f9bc9f81797a69181900360600190a1505600a165627a7a72305820ba16d1d2b379b98513eb8b3a4f3c158682c203cedecdae8bd2de9f029c76638d0029",
@@ -628,8 +631,14 @@
       "links": {},
       "address": "0x9adc34adce3797798170e908e309e8cf71e5db1c",
       "transactionHash": "0xb5eb5d44ddf5574d865abf69d3efd8fac3b316d4aa3c3e57a15dcfd5cdcf3cf6"
+    },
+    "1534891437232": {
+      "events": {},
+      "links": {},
+      "address": "0x3076d8bcD56c51D79f1ddA9FE5185160849c2722",
+      "transactionHash": "0x9aad48acd65bdbb881e235157b5c8b8e7e1b74b1985aed54123ac03192d9f261"
     }
   },
-  "schemaVersion": "2.0.1",
-  "updatedAt": "2018-08-20T01:14:23.704Z"
+  "schemaVersion": "3.0.0-beta.0",
+  "updatedAt": "2018-08-21T22:44:16.355Z"
 }
