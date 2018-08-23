@@ -1,4 +1,4 @@
-import WorldGame from './WorldGame'
+import Game from './Game'
 import { drizzleConnect } from 'drizzle-react'
 
 const mapStateToProps = (state, ownProps) => {
@@ -15,5 +15,5 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 
-const WorldGameContainer = drizzleConnect(WorldGame, mapStateToProps);
-export default WorldGameContainer
+const GameContainer = drizzleConnect(Game, mapStateToProps);
+export default GameContainer

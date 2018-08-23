@@ -1,0 +1,36 @@
+.menuPlaceholder {
+  height: 64px;
+}
+
+.menuBar {
+  background-color: #563d7c;
+  height: 64px;
+  color: #fff;
+  position: fixed;
+  width: 100%;
+  z-index: 10;
+  white-space: nowrap;
+}
+
+.menuInner {
+  margin: 0 69px;
+  padding-top: 14px;
+}
+
+.menuBtn {
+  padding: 8px 15px;
+  cursor: pointer;
+  display: inline-block;
+  background: transparent;
+  font-size: 16px;
+  color: #cbbde2;
+}
+
+.menuBtn:hover {
+  color: #fff;
+}
+
+.selectedBtn {
+  background: transparent;
+  color: #fff;
+}

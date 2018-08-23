@@ -1,0 +1,13 @@
+.notValid {
+    border-color: #a00;
+    background-color: #fdd;
+}
+
+.pendingGameMsg {
+    margin-top: 20px;
+}
+
+.linkSpan {
+    cursor: pointer;
+    color: #229bff;
+}

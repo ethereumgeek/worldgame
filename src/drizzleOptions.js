@@ -1,6 +1,3 @@
-import ComplexStorage from './../build/contracts/ComplexStorage.json'
-import SimpleStorage from './../build/contracts/SimpleStorage.json'
-import TutorialToken from './../build/contracts/TutorialToken.json'
 import WorldGame from './../build/contracts/WorldGame.json'
 
 const drizzleOptions = {
@@ -12,17 +9,14 @@ const drizzleOptions = {
     }
   },
   contracts: [
-    ComplexStorage,
-    SimpleStorage,
-    TutorialToken,
     WorldGame
   ],
   events: {
-    SimpleStorage: ['StorageSet'],
     WorldGame: ['NewGame', 'NextTurn', 'Winner']
   },
   polls: {
-    accounts: 1500
+    accounts: 1500,
+    blocks: 3000
   }
 }
 

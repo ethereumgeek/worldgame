@@ -2,11 +2,6 @@ import React, { Component } from 'react';
 import './ArrowControl.css';
 
 class ArrowControl extends Component {
-    //constructor(props) {
-    //  super(props);
-
-        // This binding is necessary to make `this` work in the callback
-    //}
 
     shorten(x, y, w, h, amount, shortenX, shortenY, shortenW, shortenH) {
       let length = Math.sqrt((w*w) + (h*h));
