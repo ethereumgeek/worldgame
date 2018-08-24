@@ -14,6 +14,7 @@ const drizzleOptions = {
   events: {
     WorldGame: ['NewGame', 'NextTurn', 'Winner']
   },
+  syncAlways: true,
   polls: {
     accounts: 1500,
     blocks: 3000

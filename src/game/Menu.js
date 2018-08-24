@@ -4,7 +4,7 @@ import { selectPage } from "./MenuActions"
 import PropTypes from 'prop-types';
 
 class Menu extends Component {
-    constructor(props) {
+    constructor(props, context) {
       super(props);
 
         // This binding is necessary to make `this` work in the callback

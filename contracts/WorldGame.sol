@@ -94,11 +94,11 @@ contract WorldGame {
         /* A unique ID to identify this turn. */
         uint32 turnNum;
 
-        /* Number of players in this game. */
-        uint32 playerCount;
-
         /* Maxmimum number of blocks per turn. */
         uint32 maxBlocksPerTurn;
+
+        /* Number of players in this game. */
+        uint32 playerCount;
 
         /* Address of each player. */
         address[MAX_PLAYERS] playerAddresses;
@@ -232,10 +232,10 @@ contract WorldGame {
             uint32(0), 
             /* uint32 turnNum */
             uint32(block.number), 
-            /* uint32 playerCount */
-            playerCount,
             /* uint32 maxBlocksPerTurn */
             maxBlocksPerTurn,
+            /* uint32 playerCount */
+            playerCount,
             /* address[MAX_PLAYERS] playerAddresses */
             playerAddresses, 
             /* uint256 undeployedSoldiers */
@@ -456,6 +456,28 @@ contract WorldGame {
         }
 
         return (regionOwnersList, game.regionSoldiers);
+    }
+
+    /// @notice Returns information about current turn and players.
+    /// @param gameId Id of game 
+    /// @return Id of current player
+    /// @return Turn number
+    /// @return Max blocks per turn
+    /// @return Number of players
+    /// @return Player addresses
+    function turnAndPlayerInfo(uint256 gameId) 
+        public 
+        view 
+        returns(uint32, uint32, uint32, uint32, address[MAX_PLAYERS]) 
+    {
+        GameData storage game = gameDataArray[gameId];
+        return (
+            game.turnTeamId, 
+            game.turnNum, 
+            game.maxBlocksPerTurn, 
+            game.playerCount, 
+            game.playerAddresses
+        );
     }
 
     /// @notice Returns the number of undeployed soldiers for each player.

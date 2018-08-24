@@ -15,3 +15,15 @@ export function openGame(gameId) {
     });
   }
 }
+
+export function syncGameCount(drizzle) {
+  return function(dispatch) {
+
+    let dataKey = drizzle.contracts.WorldGame.methods.numberOfGames.cacheCall();
+
+    dispatch({
+      type: 'SET_GAME_COUNT_KEY',
+      payload: dataKey
+    });
+  }
+}

@@ -3,11 +3,10 @@ import { drizzleConnect } from 'drizzle-react'
 
 const mapStateToProps = (state, ownProps) => {
   return {
+    gameId: ownProps.gameId,
     game: state.game,
     menu: state.menu,
     accounts: state.accounts,
-    SimpleStorage: state.contracts.SimpleStorage,
-    TutorialToken: state.contracts.TutorialToken,
     WorldGame: state.contracts.WorldGame,
     drizzleStatus: state.drizzleStatus,
     web3: state.web3
