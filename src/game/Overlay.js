@@ -86,7 +86,7 @@ class Overlay extends Component {
     getContext() {
         let selectedOverlayId = this.props.game.selectedOverlayId;
         
-        //console.log("selectedOverlayId: " + selectedOverlayId);
+        const MAX_ACTIONS_PER_TURN = 8;
         const NO_PLAYER = 255;
         const NO_REGION = 255;
         let regionDisplay = "";
@@ -135,9 +135,11 @@ class Overlay extends Component {
             regionId = tile.regionId;
             regionName = tile.name;
 
-            canMoveOrAttack = yourTurn && isYourTeam && movableSoldiers > 0;
+            canMoveOrAttack = yourTurn && isYourTeam && movableSoldiers > 0 && this.props.actionCount < MAX_ACTIONS_PER_TURN;
             canDeploySoldiers = yourTurn && (isYourTeam || isNotOwned) && yourUndeployedSoldiers > 0;
         }
+
+        let reachedMaxActions = this.props.actionCount >= MAX_ACTIONS_PER_TURN;
 
         return {
             NO_PLAYER, 
@@ -156,7 +158,8 @@ class Overlay extends Component {
             teamId, 
             ownedByStr,
             regionId,
-            regionName
+            regionName,
+            reachedMaxActions
         };
     }
   
@@ -178,7 +181,8 @@ class Overlay extends Component {
           avatar, 
           canMoveOrAttack, 
           canDeploySoldiers, 
-          ownedByStr
+          ownedByStr,
+          reachedMaxActions
       } = this.getContext();
 
       console.log(this.getContext());
@@ -204,6 +208,7 @@ class Overlay extends Component {
                           )}
                           <div className="summaryText">Soldiers: {soldiers}</div>
                           <div className="summaryText">Points for owning: {points}</div>
+                          {reachedMaxActions && <div className="errorExplainer">You've reached the limit of 8 moves and attacks per turn</div>}
                           {canMoveOrAttack && (
                           <div>
                               <input disabled={false} autoComplete="off" placeholder="Soldiers" type="text" className="inputBoxShort" name="moveSoldiers" value={input.moveSoldiers || ""} onChange={this.handleInputChange} />

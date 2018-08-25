@@ -262,7 +262,6 @@ class Game extends Component {
         mapTiles.push({
             top:280, left:0, width:205, height:120,
             color:this.getColor(colorIndex++),
-            continent:"north_america",
             name:"HAWAII",
             neighbors:{WESTERN_USA:true, FIJI:true},
             points: 3
@@ -271,7 +270,6 @@ class Game extends Component {
         mapTiles.push({
             top:0, left:0, width:405, height:175,
             color:this.getColor(colorIndex++),
-            continent:"north_america",
             name:"WESTERN_CANADA",
             neighbors:{WESTERN_USA:true, EASTERN_CANADA:true, EASTERN_RUSSIA:true},
             points: 6
@@ -280,7 +278,6 @@ class Game extends Component {
         mapTiles.push({
             top:0, left:405, width:200, height:175,
             color:this.getColor(colorIndex++),
-            continent:"north_america",
             name:"EASTERN_CANADA",
             neighbors:{WESTERN_CANADA:true, GREENLAND:true, EASTERN_USA:true},
             points: 5
@@ -289,7 +286,6 @@ class Game extends Component {
         mapTiles.push({
             top:175, left:205, width:200, height:205,
             color:this.getColor(colorIndex++),
-            continent:"north_america",
             name:"WESTERN_USA",
             neighbors:{HAWAII:true, WESTERN_CANADA:true, EASTERN_USA:true, NORTHERN_SOUTH_AMERICA:true},
             points: 11
@@ -298,7 +294,6 @@ class Game extends Component {
         mapTiles.push({
             top:175, left:405, width:200, height:205,
             color:this.getColor(colorIndex++),
-            continent:"north_america",
             name:"EASTERN_USA",
             neighbors:{WESTERN_USA:true, EASTERN_CANADA:true, NORTHERN_SOUTH_AMERICA:true},
             points: 8
@@ -307,7 +302,6 @@ class Game extends Component {
         mapTiles.push({
             top:0, left:605, width:160, height:175,
             color:this.getColor(colorIndex++),
-            continent:"north_america",
             name:"GREENLAND",
             neighbors:{EASTERN_CANADA:true, WESTERN_EUROPE:true},
             points: 3
@@ -316,7 +310,6 @@ class Game extends Component {
         mapTiles.push({
             top:380, left:375, width:300, height:180,
             color:this.getColor(colorIndex++),
-            continent:"south_america",
             name:"NORTHERN_SOUTH_AMERICA",
             neighbors:{WESTERN_USA:true, EASTERN_USA:true, SOUTHERN_SOUTH_AMERICA:true},
             points: 3
@@ -325,7 +318,6 @@ class Game extends Component {
         mapTiles.push({
             top:560, left:375, width:300, height:190,
             color:this.getColor(colorIndex++),
-            continent:"south_america",
             name:"SOUTHERN_SOUTH_AMERICA",
             neighbors:{NORTHERN_SOUTH_AMERICA:true, WEST_ANTARCTICA:true},
             points: 4
@@ -334,7 +326,6 @@ class Game extends Component {
         mapTiles.push({
             top:750, left:255, width:630, height:120,
             color:this.getColor(colorIndex++),
-            continent:"antarctica",
             name:"WEST_ANTARCTICA",
             neighbors:{SOUTHERN_SOUTH_AMERICA:true, EAST_ANTARCTICA:true},
             points: 2
@@ -343,7 +334,6 @@ class Game extends Component {
         mapTiles.push({
             top:750, left:885, width:630, height:120,
             color:this.getColor(colorIndex++),
-            continent:"antarctica",
             name:"EAST_ANTARCTICA",
             neighbors:{WEST_ANTARCTICA:true, NEW_ZEALAND:true},
             points: 2
@@ -352,7 +342,6 @@ class Game extends Component {
         mapTiles.push({
             top:0, left:765, width:120, height:245,
             color:this.getColor(colorIndex++),
-            continent:"europe",
             name:"WESTERN_EUROPE",
             neighbors:{GREENLAND:true, EASTERN_EUROPE:true, WEST_AFRICA:true},
             points: 10
@@ -361,7 +350,6 @@ class Game extends Component {
         mapTiles.push({
             top:0, left:885, width:120, height:245,
             color:this.getColor(colorIndex++),
-            continent:"europe",
             name:"EASTERN_EUROPE",
             neighbors:{WESTERN_EUROPE:true, WEST_AFRICA:true, MIDDLE_EAST:true, CENTRAL_RUSSIA:true},
             points: 6
@@ -370,7 +358,6 @@ class Game extends Component {
         mapTiles.push({
             top:0, left:1005, width:220, height:245,
             color:this.getColor(colorIndex++),
-            continent:"asia",
             name:"CENTRAL_RUSSIA",
             neighbors:{EASTERN_EUROPE:true, MIDDLE_EAST:true, INDIA:true, EASTERN_CHINA:true, EASTERN_RUSSIA:true},
             points: 4
@@ -379,7 +366,6 @@ class Game extends Component {
         mapTiles.push({
             top:0, left:1225, width:485, height:175,
             color:this.getColor(colorIndex++),
-            continent:"asia",
             name:"EASTERN_RUSSIA",
             neighbors:{EASTERN_CHINA:true, CENTRAL_RUSSIA:true, WESTERN_CANADA:true},
             points: 3
@@ -388,7 +374,6 @@ class Game extends Component {
         mapTiles.push({
             top:245, left:715, width:220, height:255,
             color:this.getColor(colorIndex++),
-            continent:"africa",
             name:"WEST_AFRICA",
             neighbors:{WESTERN_EUROPE:true, EASTERN_EUROPE:true, MIDDLE_EAST:true, EAST_AFRICA:true, SOUTH_AFRICA:true},
             points: 3
@@ -397,7 +382,6 @@ class Game extends Component {
         mapTiles.push({
             top:245, left:935, width:180, height:135,
             color:this.getColor(colorIndex++),
-            continent:"asia",
             name:"MIDDLE_EAST",
             neighbors:{EASTERN_EUROPE:true, CENTRAL_RUSSIA:true, INDIA:true, EAST_AFRICA: true, WEST_AFRICA:true },
             points: 4
@@ -406,7 +390,6 @@ class Game extends Component {
         mapTiles.push({
             top:380, left:935, width:180, height:120,
             color:this.getColor(colorIndex++),
-            continent:"africa",
             name:"EAST_AFRICA",
             neighbors:{WEST_AFRICA:true, SOUTH_AFRICA:true, MIDDLE_EAST:true, INDIA:true},
             points: 3
@@ -415,7 +398,6 @@ class Game extends Component {
         mapTiles.push({
             top:500, left:715, width:400, height:130,
             color:this.getColor(colorIndex++),
-            continent:"africa",
             name:"SOUTH_AFRICA",
             neighbors:{WEST_AFRICA:true, EAST_AFRICA:true},
             points: 5
@@ -424,7 +406,6 @@ class Game extends Component {
         mapTiles.push({
             top:245, left:1115, width:110, height:175,
             color:this.getColor(colorIndex++),
-            continent:"asia",
             name:"INDIA",
             neighbors:{EAST_AFRICA:true, MIDDLE_EAST:true, CENTRAL_RUSSIA:true, EASTERN_CHINA:true, SOUTHEAST_ASIA:true},
             points: 7
@@ -433,7 +414,6 @@ class Game extends Component {
         mapTiles.push({
             top:175, left:1225, width:290, height:155,
             color:this.getColor(colorIndex++),
-            continent:"asia",
             name:"EASTERN_CHINA",
             neighbors:{INDIA:true, CENTRAL_RUSSIA:true, EASTERN_RUSSIA:true, SOUTHEAST_ASIA:true},
             points: 10
@@ -442,7 +422,6 @@ class Game extends Component {
         mapTiles.push({
             top:330, left:1225, width:290, height:160,
             color:this.getColor(colorIndex++),
-            continent:"asia",
             name:"SOUTHEAST_ASIA",
             neighbors:{INDIA:true, EASTERN_CHINA:true, WESTERN_AUSTRALIA:true, EASTERN_AUSTRALIA:true, FIJI:true},
             points: 5
@@ -451,7 +430,6 @@ class Game extends Component {
         mapTiles.push({
             top:490, left:1305, width:110, height:200,
             color:this.getColor(colorIndex++),
-            continent:"australia",
             name:"WESTERN_AUSTRALIA",
             neighbors:{EASTERN_AUSTRALIA:true, SOUTHEAST_ASIA:true},
             points: 4
@@ -460,7 +438,6 @@ class Game extends Component {
         mapTiles.push({
             top:490, left:1415, width:100, height:200,
             color:this.getColor(colorIndex++),
-            continent:"australia",
             name:"EASTERN_AUSTRALIA",
             neighbors:{WESTERN_AUSTRALIA:true, SOUTHEAST_ASIA:true, FIJI:true, NEW_ZEALAND:true},
             points: 6
@@ -469,7 +446,6 @@ class Game extends Component {
         mapTiles.push({
             top:600, left:1515, width:195, height:200,
             color:this.getColor(colorIndex++),
-            continent:"zealandia",
             name:"NEW_ZEALAND",
             neighbors:{EASTERN_AUSTRALIA:true, FIJI:true, EAST_ANTARCTICA:true},
             points: 4
@@ -478,7 +454,6 @@ class Game extends Component {
         mapTiles.push({
             top:330, left:1515, width:195, height:270,
             color:this.getColor(colorIndex++),
-            continent:"zealandia",
             name:"FIJI",
             neighbors:{NEW_ZEALAND:true, EASTERN_AUSTRALIA:true, SOUTHEAST_ASIA:true, HAWAII:true},
             points: 2
@@ -683,7 +658,10 @@ class Game extends Component {
         let lostDefenders = initialDefenders > remainingDefenders ? initialDefenders - remainingDefenders : 0;
         let lostAttackers = initialAttackers > remainingAttackers ? initialAttackers - remainingAttackers : 0;
 
-        actionSoldiersByRegion[actionEntry.toRegion] = initialAttackers;
+        if (!actionSoldiersByRegion.hasOwnProperty(actionEntry.toRegion)) {
+            actionSoldiersByRegion[actionEntry.toRegion] = 0;
+        }
+        actionSoldiersByRegion[actionEntry.toRegion] += initialAttackers;
 
         let outcomeClass = "outcomePending";
         let outcomeText = "Waiting for block #" + (actionEntry.submitBlock + 2) + ".  Current block is #" + blockNumber + ".";
@@ -734,8 +712,7 @@ class Game extends Component {
       }
     }
     
-    const NO_WINNER = 1000;
-    let firstTilePlayer = mapTiles.length > 0 ? mapTiles[0].teamId : NO_WINNER;
+    let firstTilePlayer = mapTiles.length > 0 ? mapTiles[0].teamId : NO_PLAYER;
     let testWinnerRegionCount = 0;
     let yourRegionCount = 0;
     let overlayData = null;
@@ -834,7 +811,7 @@ class Game extends Component {
                 }}
             >
                 {tile.display}
-                {(yourTurn && hasHover && (isYourTeam || isUnowned) && !isSelected) ? 
+                {(selectedTileRegion === null && yourTurn && hasHover && (isYourTeam || isUnowned) && !isSelected) ? 
                     <div style={{position:"absolute", zIndex:10, color:"#00cc00", background:"rgba(0,0,0,0.7)", textAlign:"center", width:90, padding:10, fontSize:24, top:(topPos+10), left:(leftPos-20)}}>SELECT</div> : 
                     null
                 }
@@ -868,14 +845,6 @@ class Game extends Component {
                         <div>{tile.soliders}</div>
                     </div>
                 )}
-                {/*hasHover ? 
-                    <div style={{position:"absolute", bottom:0, left:0, color:"#000"}}>
-                        <span>+{tile.points} </span>
-                        <img src="/soldier.png" alt="" style={{maxWidth:20, maxHeight:20, verticalAlign:"top"}} />
-                        <span>/turn</span>
-                    </div> : 
-                    null
-                */}
             </div>
         );
     }
@@ -883,7 +852,7 @@ class Game extends Component {
     let renderedGaps = [];
     for(let i = 0; i < gapTiles.length; i++) {
         let tile = gapTiles[i];
-        renderedGaps.push(<div key={i} style={{position:"absolute", top:tile.top, left:tile.left, width:tile.width, height:tile.height, background:"rgba(64, 196, 255, 0.3)"}}></div>);
+        renderedGaps.push(<div key={i} onClick={this.cancelTile} style={{position:"absolute", top:tile.top, left:tile.left, width:tile.width, height:tile.height, background:"rgba(64, 196, 255, 0.3)"}}></div>);
     }
 
     let renderedArrows = [];
@@ -893,8 +862,8 @@ class Game extends Component {
     }
 
     let hasWinner = false;
-    let winnerId = NO_WINNER;
-    if (testWinnerRegionCount === mapTiles.length && firstTilePlayer !== NO_WINNER) {
+    let winnerId = NO_PLAYER;
+    if (testWinnerRegionCount === mapTiles.length && firstTilePlayer !== NO_PLAYER) {
         hasWinner = true;
         winnerId = firstTilePlayer;
     }
@@ -937,7 +906,7 @@ class Game extends Component {
 
     return (
         <div>
-            {selectedOverlayId !== null && <OverlayContainer data={overlayData} gameId={gameId} turnNum={turnNum} waitingForActions={waitingForActions} waitingForBlock={waitingForBlock} />}
+            {selectedOverlayId !== null && <OverlayContainer data={overlayData} gameId={gameId} turnNum={turnNum} waitingForActions={waitingForActions} waitingForBlock={waitingForBlock} actionCount={actionCount} />}
             <div className="menuGap"></div>
             <div style={{background:"#fafafa", width: 1710}}>
                 {initialized && (
