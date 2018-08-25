@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './Overlay.css';
 import PropTypes from 'prop-types';
-import { showOverlay, updateInput, selectTile, deployAndEndTurn, updateValidation } from './GameActions'
+import { closeOverlay, updateInput, selectTile, deployAndEndTurn, updateValidation } from './GameActions'
 
 class Overlay extends Component {
     constructor(props, context) {
@@ -27,7 +27,7 @@ class Overlay extends Component {
     }
 
     closeOverlay(event) {
-        this.props.dispatch(showOverlay(null));
+        this.props.dispatch(closeOverlay(null));
     }
 
     handleOutsideClick(event) {

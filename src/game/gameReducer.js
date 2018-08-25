@@ -7,7 +7,9 @@ const initialState = {
     hoverTile: null,
     web3Instance: null,
     dataKeysByGame: {},
-    selectedOverlayId: null
+    selectedOverlayId: null,
+    pendingEndTurn: null,
+    pendingAttackOrMove: null
 }
 
 const gameReducer = (state = initialState, action) => {
@@ -18,7 +20,21 @@ const gameReducer = (state = initialState, action) => {
 
       return Object.assign({}, state, {
           selectedOverlayId: newValue,
-          input: {},
+          input: {}, 
+          validationMap: {}, 
+          pendingEndTurn: null, 
+          pendingAttackOrMove: null, 
+          selectedTileRegion: null, 
+          selectedTileSoldiers: null, 
+          selectedTileTurnNum: null
+      });
+  }
+
+  if (action.type === 'CLOSE_OVERLAY')
+  {
+      return Object.assign({}, state, {
+          selectedOverlayId: null,
+          input: {}, 
           validationMap: {}
       });
   }
@@ -75,6 +91,24 @@ const gameReducer = (state = initialState, action) => {
     return Object.assign({}, state, {
         dataKeysByGame: newValue
     });
+  }
+
+  if (action.type === 'PENDING_DEPLOY_END_TURN')
+  {
+      let newValue = action.payload;
+
+      return Object.assign({}, state, {
+          pendingEndTurn: newValue
+      });
+  }
+
+  if (action.type === 'PENDING_ATTACK_OR_MOVE')
+  {
+      let newValue = action.payload;
+
+      return Object.assign({}, state, {
+          pendingAttackOrMove: newValue
+      });
   }
 
   return state

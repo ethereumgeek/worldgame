@@ -7,6 +7,14 @@ export function showOverlay(val) {
   }
 }
 
+export function closeOverlay() {
+  return function(dispatch) {
+    dispatch({
+      type: 'CLOSE_OVERLAY'
+    });
+  }
+}
+
 export function selectTile(regionId, soldiers, turnNum) {
   return function(dispatch) {
     dispatch({
@@ -14,7 +22,7 @@ export function selectTile(regionId, soldiers, turnNum) {
       payload: { regionId, soldiers, turnNum }
     });
 
-    dispatch(showOverlay(null));
+    dispatch(closeOverlay());
   }
 }
 
@@ -97,12 +105,6 @@ export function deployAndEndTurn(drizzle, gameId, turnNum, regionDeploy, soldier
         soldiers.toString(), 
         {from: selectedAddress}
     );
-
-    console.log(
-      {gameId:gameId.toString(), 
-        turnNum:turnNum.toString(), 
-        regionDeploy:regionDeploy.toString(), 
-        soldiers:soldiers.toString()});
       
     dispatch({
       type: 'PENDING_DEPLOY_END_TURN',
@@ -119,6 +121,20 @@ export function cacheBlockHash(drizzle, blockNum) {
 
     gameInstance.methods.cacheBlockHash32.cacheSend(
         blockNum.toString(), 
+        {from: selectedAddress}
+    );
+  }
+}
+
+export function declareWinner(drizzle, gameId, winnerId) {
+  return function(dispatch) {
+    let { eth } = drizzle.web3;
+    let gameInstance = drizzle.contracts.WorldGame;
+    let { selectedAddress = "" } = eth.currentProvider.publicConfigStore.getState();
+
+    gameInstance.methods.declareWinner.cacheSend(
+        gameId.toString(), 
+        winnerId.toString(), 
         {from: selectedAddress}
     );
   }
