@@ -1,0 +1,20 @@
+ul {
+    list-style-type: disc;
+    margin: 15px 0 0 20px;
+}
+
+li {
+    margin-top: 5px!important;
+}
+
+.outcomePending {
+    color: #ee8500;
+}
+
+.outcomeWon {
+    color: #1Aa239;
+}
+
+.outcomeLost {
+    color: #dd2010;
+}

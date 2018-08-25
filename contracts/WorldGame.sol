@@ -534,6 +534,60 @@ contract WorldGame {
         );
     }
 
+    /// @notice Returns pending actions that have been queued for current turn.
+    /// @param gameId Id of game 
+    /// @return Current block numbber
+    /// @return Number of pending actions
+    /// @return List with block number when action was queued
+    /// @return Number of remaining attackers
+    /// @return Number of remaining defenders
+    function pendingActionOutcomes(uint256 gameId) 
+        public 
+        view 
+        returns(
+            uint32,
+            uint32,
+            uint32[MAX_ACTIONS_PER_TURN], 
+            uint32[MAX_ACTIONS_PER_TURN], 
+            uint32[MAX_ACTIONS_PER_TURN]
+    ) {
+        GameData storage game = gameDataArray[gameId];
+
+        uint32[MAX_ACTIONS_PER_TURN] memory submitBlockList;
+        uint32[MAX_ACTIONS_PER_TURN] memory remainingAttackerList;
+        uint32[MAX_ACTIONS_PER_TURN] memory remainingDefenderList;
+
+        for (uint32 i = 0; i < MAX_ACTIONS_PER_TURN; i++) {
+            uint32 toRegion = getData32(game.toRegionList, i);
+            uint32 moveSoldierCount = getData32(game.moveSoldierCountList, i);
+            submitBlockList[i] = getData32(game.submitBlockList, i);
+
+            if (block.number > submitBlockList[i] + 1) {
+                (uint32 remainingAttackers, uint32 remainingDefenders) = getOutcomeAttackOrMove(
+                    /* uint32 submitBlock */
+                    submitBlockList[i], 
+                    /* uint32 moveSoldierCount */
+                    moveSoldierCount, 
+                    /* uint32 defenderCount  */
+                    game.regionSoldiers[toRegion],
+                    /* bool friendly  */
+                    getData8(game.regionOwners, toRegion) == game.turnTeamId
+                );
+
+                remainingAttackerList[i] = remainingAttackers;
+                remainingDefenderList[i] = remainingDefenders;
+            }
+        }
+
+        return (
+            uint32(block.number), 
+            game.actionCount, 
+            submitBlockList, 
+            remainingAttackerList,
+            remainingDefenderList
+        );
+    }
+
     /// @notice Execute actions that have been queued for this turn.
     /// @param gameId Id of game 
     function executePendingActions(

@@ -21,7 +21,6 @@ class WorldGame extends Component {
   }
 
   openGame(gameId) {
-      console.log("Open game: " + gameId);
       this.props.dispatch(openGame(gameId));
   }
   
@@ -41,11 +40,9 @@ class WorldGame extends Component {
     return (
         <div>
             <MenuContainer />
-            <div className="contentContainer">
-                {selectedPage === "open" && (<OpenGame onOpenGame={this.openGame} gameCount={gameCount} />)}
-                {selectedPage === "create" && (<CreateGameContainer />)}
-                {selectedPage === "game" && (<GameContainer gameId={this.props.menu.selectedGameId} />)}
-            </div>
+            {selectedPage === "open" && (<OpenGame onOpenGame={this.openGame} gameCount={gameCount} />)}
+            {selectedPage === "create" && (<CreateGameContainer />)}
+            {selectedPage === "game" && (<GameContainer gameId={this.props.menu.selectedGameId} />)}
         </div>
     )
   }

@@ -46,7 +46,6 @@ class CreateGame extends Component {
     }
 
     openGame(event, gameId) {
-        console.log("Open game: " + gameId);
         this.props.dispatch(openGame(gameId));
     }
 
@@ -114,6 +113,7 @@ class CreateGame extends Component {
   
       return (
           <div>
+              <div className="menuGap"></div>
               <div className="inputContainer">
                   <div className="groupTitle groupMargin">Create a new game</div>
                   {txHash === null ? (
