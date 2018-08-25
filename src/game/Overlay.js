@@ -16,7 +16,7 @@ class Overlay extends Component {
         this.getContext = this.getContext.bind(this);
         this.node = null;
     }
-
+ 
     componentDidMount() {
         this.props.dispatch(updateValidation({}));
         document.addEventListener('mousedown', this.handleOutsideClick, false);
@@ -54,8 +54,7 @@ class Overlay extends Component {
         let input = this.props.game.input;
         let deploySoldiers = parseInt(input.deploySoldiers, 10) || 0;
         let { yourUndeployedSoldiers, regionId } = this.getContext();
-        if (deploySoldiers > 0 && deploySoldiers <= yourUndeployedSoldiers) {
-
+        if (input.deploySoldiers !== "" && deploySoldiers >= 0 && deploySoldiers <= yourUndeployedSoldiers) {
             if (!this.props.waitingForActions) {
                 this.props.dispatch(deployAndEndTurn(
                     this.context.drizzle, 
@@ -66,7 +65,8 @@ class Overlay extends Component {
                 ));
             }
             else {
-                alert("Sorry, you have blocking actions.  Please wait for block #");
+                this.props.dispatch(updateValidation({moveSoldiers: true, deploySoldiers: false}));
+                alert("You cannot end turn until block #" + this.props.waitingForBlock);
             }
         }
         else {
@@ -214,8 +214,9 @@ class Overlay extends Component {
                           {canDeploySoldiers && (
                               <div>
                                   <input disabled={false} autoComplete="off" placeholder="Soldiers" type="text" className="inputBoxShort" name="deploySoldiers" value={input.deploySoldiers || ""} onChange={this.handleInputChange} />
-                                  <button className="btn" onClick={this.deployAndEndTurn}>Deploy and end turn</button>
+                                  <button className={this.props.waitingForActions ? "btnDisabled" : "btn"} onClick={this.deployAndEndTurn}>Deploy and end turn</button>
                                   <div className={notValidDeploySoldiers ? "errorExplainer" : "inputExplainer"}>Maximum {yourUndeployedSoldiers} soldiers</div>
+                                  {this.props.waitingForActions && <div className={notValidDeploySoldiers ? "errorExplainer" : "inputExplainer"}>You cannot end turn until block #{this.props.waitingForBlock}</div>}
                               </div>
                           )}
                       </div>

@@ -31,26 +31,12 @@
     position: relative;
     padding: 20px;
     width: 400px;
-    height: 400px;
+    min-height: 300px;
     cursor: default;
 }
 
 .summaryText {
     margin-top: 5px;
-}
-
-.inputExplainer {
-    color: #333;
-    font-size: 12px;
-    margin-top: 5px;
-    margin-left: 0px;
-}
-
-.errorExplainer {
-  color: #dd2010;
-  font-size: 12px;
-  margin-top: 5px;
-  margin-left: 0px;
 }
 
 .yourTurnMsg {

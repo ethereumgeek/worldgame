@@ -143,7 +143,7 @@ class Game extends Component {
       ));
     }
 
-    endTurn(event, turnNum, waitingForActions) {
+    endTurn(event, turnNum, waitingForActions, waitingForBlock) {
         const NO_REGION = 255;
         if (!waitingForActions) {
             this.props.dispatch(deployAndEndTurn(
@@ -155,7 +155,7 @@ class Game extends Component {
             ));
         }
         else {
-            alert("Sorry, you have blocking actions.  Please wait for block #");
+            alert("You cannot end turn until block #" + waitingForBlock);
         }
     }
 
@@ -573,6 +573,7 @@ class Game extends Component {
                 soldierCount: parseInt(moveSoldierCountList[i], 10), 
                 submitBlock: submitBlock,
                 hasOutcome: (blockNumber > submitBlock + 1), 
+                outcomeBlock: (submitBlock + 2), 
                 remainingAttackers: parseInt(remainingAttackerList[i], 10), 
                 remainingDefenders: parseInt(remainingDefenderList[i], 10), 
                 owner: owner
@@ -603,8 +604,40 @@ class Game extends Component {
         }
     }
 
+    let currentPlayerStr = "";
+    let renderPlayerList = [];
+    if (playerAddresses) {
+        for (let i = 0; i < playerAddresses.length; i++) {
+            let avatar = this.getAvatarFromTeamId(i);
+            let extraMsg = "";
+            if (i === playerNum) {
+                extraMsg = "(you)";
+            }
+            
+            let borderStyle = "1px solid #999";
+            let backgroundStyle = "";
+            if (i === turnTeamId) {
+                borderStyle = "1px solid #1Aa239";
+                backgroundStyle = "#1Aa239";
+                currentPlayerStr = "Player " + (i + 1);
+                if (i === playerNum) {
+                    currentPlayerStr += " (you)";
+                }
+            }
+
+            renderPlayerList.push(
+                <td style={{border: borderStyle, background: backgroundStyle}} key={i}>
+                    <div style={{width:70, height:120, textAlign:"center", padding:10}}>
+                        <div>player {i+1}</div>
+                        <div><img src={"/" + avatar + ".png"} alt="" style={{maxWidth:70, maxHeight:70, marginTop:5}}/></div>
+                        <div>{extraMsg}</div>
+                    </div>
+                </td>
+            );
+        }
+    }
+
     let yourTurn = (playerNum === turnTeamId);
-    let yourAvatar = this.getAvatarFromTeamId(playerNum);
     let selectedOverlayId = this.props.game.selectedOverlayId;
     let selectedTileRegion = this.props.game.selectedTileRegion;
     let hoverTile = this.props.game.hoverTile;
@@ -765,6 +798,7 @@ class Game extends Component {
     }
 
     let waitingForActions = false;
+    let waitingForBlock = 0;
     let renderedActions = [];
     for (let i = 0; i < actionList.length; i++) {
         let actionEntry = actionList[i];
@@ -789,28 +823,29 @@ class Game extends Component {
         if (actionEntry.hasOutcome) {
             if (isFriendly) {
                 outcomeClass = "outcomeWon";
-                outcomeText = "Successfully moved " + initialAttackers + " soldiers.";
+                outcomeText = currentPlayerStr + " moved " + initialAttackers + " soldiers.";
             }
             else {
                 if (remainingDefenders === 0) {
                     outcomeClass = "outcomeWon";
-                    outcomeText = "You won the attack!  You lost " + lostAttackers + " soldiers, and killed " + lostDefenders + " soldiers.";
+                    outcomeText = currentPlayerStr + " won the attack!  " + currentPlayerStr + " lost " + lostAttackers + " soldiers, and killed " + lostDefenders + " soldiers.";
                 }
                 else {
                     outcomeClass = "outcomeLost";
-                    outcomeText = "You lost the attack!  You lost " + lostAttackers + " soldiers, and killed " + lostDefenders + " soldiers.";
+                    outcomeText = currentPlayerStr + " lost the attack!  " + currentPlayerStr + " lost " + lostAttackers + " soldiers, and killed " + lostDefenders + " soldiers.";
                 }
             }
         }
         else {
             waitingForActions = true;
+            waitingForBlock = Math.max(waitingForBlock, actionEntry.outcomeBlock);
         }
 
         renderedActions.push(
             <li key={i}>
                 {actionType} {actionEntry.soldierCount} soldiers from 
-                <span>"{this.regionIdToDisplay(actionEntry.fromRegion)}"</span> to 
-                <span>"{this.regionIdToDisplay(actionEntry.toRegion)}"</span>. 
+                <span> "{this.regionIdToDisplay(actionEntry.fromRegion)}" </span> to 
+                <span> "{this.regionIdToDisplay(actionEntry.toRegion)}"</span>. 
                 <span className={outcomeClass}> {outcomeText}</span>
             </li>
         );
@@ -818,12 +853,12 @@ class Game extends Component {
 
     return (
         <div>
-            {selectedOverlayId !== null && <OverlayContainer data={overlayData} gameId={gameId} turnNum={turnNum} waitingForActions={waitingForActions} />}
+            {selectedOverlayId !== null && <OverlayContainer data={overlayData} gameId={gameId} turnNum={turnNum} waitingForActions={waitingForActions} waitingForBlock={waitingForBlock} />}
             <div className="menuGap"></div>
             <div style={{background:"#fafafa", width: 1710}}>
                 {initialized && (
                     <div style={{padding: 20}}>
-                        {playerNum === turnTeamId ? (
+                        {yourTurn ? (
                             <span style={{fontSize:20, fontWeight:"bold", color:"#1Aa239"}}>{"It's your turn. "}</span>
                           ) : (
                             <span style={{fontSize:20, fontWeight:"bold", color:"#dd2010"}}>{playerNum === NO_PLAYER ? "You are not playing. " : ""}{"It's player " + (turnTeamId + 1) + "'s turn. "}</span>
@@ -832,25 +867,24 @@ class Game extends Component {
                             <span>{"There are " + playerCount + " players. "}</span>
                         ) : (
                             <span>
-                                {"You are player " + (playerNum + 1) + " of " + playerCount + ". "}
+                                {"You are player " + (playerNum + 1) + ". "}
                                 {"You control " + yourRegionCount + " regions and have " + yourUndeployedSoldiers + " undeployed soldiers. Interact with the map to move, attack or deploy soldiers."}
                             </span>
                           )}
-                        {yourAvatar !== null && (
-                            <div style={{marginTop:20}}>
-                                <img src={"/" + yourAvatar + ".png"} alt="" style={{maxWidth:70, maxHeight:70}}/>
-                            </div>
-                        )}
+                        <table style={{marginTop:20}}><tbody><tr>{renderPlayerList}</tr></tbody></table>
                         <div style={{marginTop:20}}>
-                            <div>Pending moves and attacks (max 8):</div>
+                            <div>Queued moves and attacks for {currentPlayerStr.toLowerCase()}. Max 8 per turn:</div>
                             <ul>
                             {renderedActions.length > 0 ? renderedActions : <li>None.</li>}
                             </ul>
                         </div>
-                        <div>
-                            <button onClick={(event) => this.endTurn(event, turnNum, waitingForActions)} className="btn" style={{marginBottom:0}}>End your turn without deploying soldiers</button>
-                            <button onClick={(event) => this.forceNextBlock(event, blockNumber)} className="btn" style={{marginBottom:0}}>Force next block</button>
-                        </div>
+                        {yourTurn && (
+                            <div>
+                                <button onClick={(event) => this.endTurn(event, turnNum, waitingForActions, waitingForBlock)} className={waitingForActions ? "btnDisabled" : "btn"} style={{marginBottom:0}}>End your turn without deploying soldiers</button>
+                                <button onClick={(event) => this.forceNextBlock(event, blockNumber)} className="btn" style={{marginBottom:0}}>Force next block</button>
+                                {waitingForActions && <div className="errorExplainer">You cannot end turn until block #{waitingForBlock}</div>}
+                            </div>
+                        )}
                     </div>
                 )}
             </div>

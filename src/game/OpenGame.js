@@ -53,7 +53,7 @@ class OpenGame extends Component {
         if (this.props.gameCount > 0) {
             for (let i = this.props.gameCount - 1; i >= 0 && i + 10 > this.props.gameCount; i--) {
                 gameLinks.push(
-                    <div style={{marginTop:5}}><span className="linkSpan" onClick={(event) => this.openGameById(event, i)}>Game #{i}</span></div>
+                    <div key={i} style={{marginTop:5}}><span className="linkSpan" onClick={(event) => this.openGameById(event, i)}>Game #{i}</span></div>
                 );
             }
         }

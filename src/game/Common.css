@@ -35,6 +35,20 @@
     margin-right: 20px;
 }
 
+.btnDisabled {
+  font-size: 16px;
+  cursor:default;
+  background: #999;
+  border: 1px solid #999;
+  padding: 5px 15px;
+  color: #fff;
+  text-decoration: none;
+  display: inline-block;
+  border-radius: 5px;
+  margin-top: 20px;
+  margin-right: 20px;
+}
+
 .btn:hover {
     background: #2A69D2;
     border: 1px solid #2A69D2;
@@ -53,4 +67,18 @@
 .linkSpan {
     cursor: pointer;
     color: #229bff;
+}
+
+.inputExplainer {
+    color: #333;
+    font-size: 12px;
+    margin-top: 5px;
+    margin-left: 0px;
+}
+
+.errorExplainer {
+    color: #dd2010;
+    font-size: 12px;
+    margin-top: 5px;
+    margin-left: 0px;
 }
