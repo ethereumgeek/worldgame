@@ -957,7 +957,7 @@ class Game extends Component {
                                 )}
                                 <table style={{marginTop:20}}><tbody><tr>{renderPlayerList}</tr></tbody></table>
                                 <div style={{marginTop:20}}>
-                                    <div>Queued moves and attacks for {currentPlayerStr.toLowerCase()}. Max 8 per turn:</div>
+                                    <div>Queued moves and attacks for current player. Max 8 per turn:</div>
                                     <ul>
                                     {renderedActions.length > 0 ? renderedActions : <li>None.</li>}
                                     </ul>
