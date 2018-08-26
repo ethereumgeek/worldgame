@@ -140,12 +140,6 @@ contract WorldGame {
     /* Event when a player wins the game! */
     event Winner(uint256 gameId, uint32 winningTeamId);
 
-    /* Event to log block hash to use when testing ! */
-    event BlockHash(uint32 blockNum, uint32 blockHash32);
-
-    /* Event to log a value to use when testing */
-    event LogValue(string name, uint32 value);
-
     /* Modifier that only allows player to take action if it's their turn. */
     modifier onlyIfPlayersTurn(uint256 gameId, uint32 turnNum) {
         GameData storage game = gameDataArray[gameId];
@@ -208,7 +202,7 @@ contract WorldGame {
     }
 
     /* Fallback function. Added so ether sent to this contract is reverted. */
-    function() public {
+    function() public payable {
         revert("Invalid call to game contract.");
     }
 
@@ -442,8 +436,6 @@ contract WorldGame {
         if (blockHash32 == 0) {
             blockHash32 = blockHash32Map[blockNum];
         }
-
-        emit BlockHash(blockNum, blockHash32);
 
         return blockHash32;
     }
@@ -737,8 +729,6 @@ contract WorldGame {
             if (blockHash32 == 0) {
                 deadDefenders = 0;
                 deadAttackers = mulSafe(defenderCount, DEFENDER_ADVANTAGE_NUM) / DEFENDER_ADVANTAGE_DENOM;
-                emit LogValue("deadDefenders", deadDefenders);
-                emit LogValue("deadAttackers", deadAttackers);
             }
             /* If blockHash32 is available then use it as a source of randomness. */
             else {
@@ -751,9 +741,6 @@ contract WorldGame {
                 /* Determine effectiveness of defence.  Gives slight extra advantage to defender. */
                 deadAttackers = mulSafe(defenderCount, DEFENDER_ADVANTAGE_NUM * randB) / 
                     (256 * DEFENDER_ADVANTAGE_DENOM);
-                
-                emit LogValue("deadDefenders", deadDefenders);
-                emit LogValue("deadAttackers", deadAttackers);
             }
 
             /* Determine remaining attackers by subtracting dead attackers. */

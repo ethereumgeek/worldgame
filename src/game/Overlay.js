@@ -193,8 +193,6 @@ class Overlay extends Component {
           reachedMaxActions
       } = this.getContext();
 
-      console.log(this.getContext());
-
       let showOverlay = (selectedOverlayId !== null);
 
       return (

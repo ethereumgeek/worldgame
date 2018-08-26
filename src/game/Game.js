@@ -729,7 +729,7 @@ class Game extends Component {
                 }
                 else {
                     outcomeClass = "outcomeLost";
-                    outcomeText = currentPlayerStr + " lost the attack!  " + currentPlayerStr + " lost " + lostAttackers + " " + (lostAttackers === 1 ? "soldier" : "soldiers") + ", and killed " + lostDefenders + " " + (lostDefenders === 1 ? "soldier" : "soldiers") + ".";
+                    outcomeText = currentPlayerStr + " failed the attack!  " + currentPlayerStr + " lost " + lostAttackers + " " + (lostAttackers === 1 ? "soldier" : "soldiers") + ", and killed " + lostDefenders + " " + (lostDefenders === 1 ? "soldier" : "soldiers") + ".";
                 }
             }
         }
