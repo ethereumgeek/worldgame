@@ -44,6 +44,12 @@ contract WorldGame {
     /* Initial number of soldier each player starts with. Each play begins with 20 soldiers. */
     uint256 constant BEGIN_SOLDIERS_COUNTS = 0x0000001400000014000000140000001400000014000000140000001400000014;
     
+    /* Contract owner used for circuit breaker. */
+    address private owner;
+
+    /* Whether circuit breaker is active. */
+    bool private stopped;
+
     /* Historical cache of block hashes. */
     mapping (uint32 => uint32) public blockHash32Map;
 
@@ -195,8 +201,23 @@ contract WorldGame {
         _;
     }
 
+    /* Modifier that only allows owner to call function. */
+    modifier isOwner() {
+        require(msg.sender == owner, "Only owner can call this function.");
+
+        _;
+    }
+
+    /* Modifier that stops function in case of emergency. */
+    modifier stopInEmergency() {
+        require(stopped == false, "Stopped due to emergency.");
+
+        _;
+    }
+
     /* Constructor initializes common data about regions. */
     constructor() public {
+        owner = msg.sender;
         initRegionNeighbors();
         initRegionRewards();
     }
@@ -204,6 +225,14 @@ contract WorldGame {
     /* Fallback function. Added so ether sent to this contract is reverted. */
     function() public payable {
         revert("Invalid call to game contract.");
+    }
+
+    /* Trigger circuit breaker to prevent new games from being created. */
+    function stopNewGames(bool stop)
+        public 
+        isOwner()
+    {
+        stopped = stop;
     }
 
     /// @notice Create a new game instance
@@ -218,6 +247,7 @@ contract WorldGame {
         bytes8 teamAvatars
     )
         public
+        stopInEmergency() 
         returns(uint256) 
     {
         /* 
