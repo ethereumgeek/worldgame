@@ -126,10 +126,13 @@ contract WorldGame {
 
         /* Block number when action was submitted. Listed by action ID. */
         uint256 submitBlockList;
+
+        /* Avatars to use for each team. */
+        bytes8 teamAvatars;
     }
     
     /* Event indicating that a new game has started. */
-    event NewGame(uint256 gameId, uint32 turnNum, bytes32 teamAvatars);
+    event NewGame(uint256 gameId, uint32 turnNum, bytes8 teamAvatars);
 
     /* Event when it's the next player's turn. */
     event NextTurn(uint256 gameId, uint32 turnNum, uint32 nextTeamId);
@@ -178,7 +181,7 @@ contract WorldGame {
 
         _;
     }
-    
+
     /* Modifier to only allow moving soldiers between adjacent regions that exist. */
     modifier onlyNeighbors(uint32 regionFrom, uint32 regionTo) {
 
@@ -218,7 +221,7 @@ contract WorldGame {
         uint32 playerCount, 
         uint32 maxBlocksPerTurn, 
         address[MAX_PLAYERS] playerAddresses, 
-        bytes32 teamAvatars
+        bytes8 teamAvatars
     )
         public
         returns(uint256) 
@@ -259,7 +262,9 @@ contract WorldGame {
             /* uint256 moveSoldierCountList */
             uint256(0), 
             /* uint256 submitBlockList */
-            uint256(0)
+            uint256(0),
+            /* bytes8 teamAvatars */
+            teamAvatars
         )) - 1;
 
         emit NewGame(gameId, uint32(block.number), teamAvatars);
@@ -477,7 +482,7 @@ contract WorldGame {
     function turnAndPlayerInfo(uint256 gameId) 
         public 
         view 
-        returns(uint32, uint32, uint32, uint32, address[MAX_PLAYERS]) 
+        returns(uint32, uint32, uint32, uint32, address[MAX_PLAYERS], bytes8) 
     {
         GameData storage game = gameDataArray[gameId];
         return (
@@ -485,22 +490,30 @@ contract WorldGame {
             game.turnNum, 
             game.maxBlocksPerTurn, 
             game.playerCount, 
-            game.playerAddresses
+            game.playerAddresses,
+            game.teamAvatars
         );
     }
 
     /// @notice Returns the number of undeployed soldiers for each player.
     /// @param gameId Id of game 
     /// @return Number of undeployed soldiers for each player
-    function undeployedSoldiers(uint256 gameId) public view returns(uint32[MAX_PLAYERS]) {
+    /// @return Reward points for each player
+    function undeployedSoldiers(uint256 gameId) 
+        public 
+        view 
+        returns(uint32[MAX_PLAYERS], uint32[MAX_PLAYERS]) 
+    {
         GameData storage game = gameDataArray[gameId];
 
         uint32[MAX_PLAYERS] memory undeployedSoldiersList;
+        uint32[MAX_PLAYERS] memory regionRewardList;
         for (uint32 i = 0; i < MAX_PLAYERS; i++) {
             undeployedSoldiersList[i] = getData32(game.undeployedSoldiers, i);
+            regionRewardList[i] = calculateRegionRewards(gameId, i); 
         }
 
-        return undeployedSoldiersList;
+        return (undeployedSoldiersList, regionRewardList);
     }
 
     /// @notice Returns pending actions that have been queued for current turn.
@@ -568,19 +581,21 @@ contract WorldGame {
 
         for (uint32 i = 0; i < MAX_ACTIONS_PER_TURN; i++) {
             uint32 toRegion = getData32(game.toRegionList, i);
-            uint32 moveSoldierCount = getData32(game.moveSoldierCountList, i);
             submitBlockList[i] = getData32(game.submitBlockList, i);
 
-            if (block.number > submitBlockList[i] + 1) {
+            bool friendly = getData8(game.regionOwners, toRegion) == game.turnTeamId || 
+                getData8(game.regionOwners, toRegion) == NOT_OWNED;
+
+            if (friendly || block.number > submitBlockList[i] + 1) {
                 (uint32 remainingAttackers, uint32 remainingDefenders) = getOutcomeAttackOrMove(
                     /* uint32 submitBlock */
                     submitBlockList[i], 
                     /* uint32 moveSoldierCount */
-                    moveSoldierCount, 
+                    getData32(game.moveSoldierCountList, i), 
                     /* uint32 defenderCount  */
                     game.regionSoldiers[toRegion],
                     /* bool friendly  */
-                    getData8(game.regionOwners, toRegion) == game.turnTeamId
+                    friendly
                 );
 
                 remainingAttackerList[i] = remainingAttackers;
@@ -610,6 +625,8 @@ contract WorldGame {
         for (uint32 i = 0; i < game.actionCount; i++) {
             uint32 regionFrom = getData32(game.fromRegionList, i);
             uint32 regionTo = getData32(game.toRegionList, i);
+            bool friendly = getData8(game.regionOwners, regionTo) == game.turnTeamId ||
+                getData8(game.regionOwners, regionTo) == NOT_OWNED;
 
             /* 
                 If attacking enemy territory, then uses randomness to determine outcome.
@@ -623,16 +640,16 @@ contract WorldGame {
                 /* uint32 defenderCount  */
                 game.regionSoldiers[regionTo],
                 /* bool friendly  */
-                getData8(game.regionOwners, regionTo) == game.turnTeamId
+                friendly
             );
 
             if (remainingDefenders == 0) {
-                /* Attacker wins.  Remaining attackers move to new region. */
+                /* Attacker wins (or move was friendly).  Remaining attackers move to new region. */
                 game.regionSoldiers[regionTo] = remainingAttackers;
                 game.regionOwners = setData8(game.regionOwners, regionTo, game.turnTeamId);
             }
             else {
-                /* Defender wins (or move was friendly).  Remaining attackers return back home. */
+                /* Defender wins.  Remaining attackers return back home. */
                 game.regionSoldiers[regionFrom] = addSafe(
                     game.regionSoldiers[regionFrom], 
                     remainingAttackers
@@ -698,11 +715,11 @@ contract WorldGame {
         view 
         returns(uint32, uint32) 
     {
-        require(block.number > submitBlock + 1, "Actions must be at least 2 blocks old.");
+        require(friendly || block.number > submitBlock + 1, "Attacks must be at least 2 blocks old.");
 
         if (friendly) {
-            /* If friendly, just move all soldiers to defending side. */
-            return (0, addSafe(moveSoldierCount, defenderCount));
+            /* If friendly, just move all soldiers to attacking side. */
+            return (addSafe(moveSoldierCount, defenderCount), 0);
         }
         else {
             /* 
@@ -754,13 +771,16 @@ contract WorldGame {
         }
     }
 
-    /// @notice Reward team with soldiers based on what regions they control.
+    /// @notice Calculate a team's reward amount based on what regions they control.
     /// @param gameId Id of game
-    function giveRegionRewards(uint256 gameId) private {
+    /// @param teamId Team you'd like to calculate rewards for
+    /// @return Reward amount for team
+    function calculateRegionRewards(uint256 gameId, uint32 teamId) 
+        private 
+        view 
+        returns(uint32) 
+    {
         GameData storage game = gameDataArray[gameId];
-
-        /* Team who's turn it is that gets the reward. */
-        uint32 teamId = game.turnTeamId;
 
         /* Reward total based on what regions player controls. */
         uint32 rewardTotal = 0;
@@ -774,12 +794,26 @@ contract WorldGame {
             }
         }
 
+        return ((rewardTotal * bonusScore) / REWARD_BONUS_MULTIPLIER_DENOM);
+    }
+
+    /// @notice Reward team with soldiers based on what regions they control.
+    /// @param gameId Id of game
+    function giveRegionRewards(uint256 gameId) private {
+        GameData storage game = gameDataArray[gameId];
+
+        /* Team who's turn it is that gets the reward. */
+        uint32 teamId = game.turnTeamId;
+
+        /* Reward total based on what regions player controls. */
+        uint32 rewardAmount = calculateRegionRewards(gameId, teamId);
+
         /* Add reward to undeployed soldiers count. */
         uint32 undeployedSoldierCount = getData32(game.undeployedSoldiers, teamId);
         game.undeployedSoldiers = setData32(
             game.undeployedSoldiers, 
             teamId, 
-            addSafe(undeployedSoldierCount, ((rewardTotal * bonusScore) / REWARD_BONUS_MULTIPLIER_DENOM))
+            addSafe(undeployedSoldierCount, rewardAmount)
         );
     }
 

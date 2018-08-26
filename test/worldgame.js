@@ -92,7 +92,7 @@ console.log(REGION_NEIGHBORS);
 
 const REGION_REWARDS = [3, 6, 5, 11, 8, 3, 3, 4, 2, 2, 10, 6, 4, 3, 3, 4, 3, 5, 7, 10, 5, 4, 6, 4, 2];
 const MAX_BLOCKS_PER_TURN = 256;
-const TEAM_AVATARS = ["EA", "MO", "", "", "", "", "", ""].join("");
+const TEAM_AVATARS = ["E", "M", "", "", "", "", "", ""].join("");
 const NO_ACCOUNT = "0x0000000000000000000000000000000000000000";
 
 
@@ -123,7 +123,7 @@ async function getSoldierCounts(worldGameInstance, gameId) {
 
     let undeployedSoldiersResp = await worldGameInstance.undeployedSoldiers(gameId);
     for (let i = 0; i < PLAYER_COUNT; i++) {
-        let undeployedSoldiers = parseInt(undeployedSoldiersResp[i].toString(), 10);
+        let undeployedSoldiers = parseInt(undeployedSoldiersResp[0][i].toString(), 10);
         undeployedSoldiersArr.push(undeployedSoldiers);
     }
 

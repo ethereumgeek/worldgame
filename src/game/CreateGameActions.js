@@ -33,7 +33,16 @@ export function updateValidation(validationMap) {
     }
 }
 
-export function startNewGame(drizzle, playerCount, input) {
+export function swapAvatar(teamId) {
+  return function(dispatch) {
+      dispatch({
+        type: 'SWAP_AVATAR',
+        payload: teamId
+      });
+  }
+}
+
+export function startNewGame(drizzle, playerCount, input, avatarIds) {
     return function(dispatch) {
         let { eth, utils } = drizzle.web3;
         let gameInstance = drizzle.contracts.WorldGame;
@@ -45,10 +54,12 @@ export function startNewGame(drizzle, playerCount, input) {
             playerAddresses.push(address);
         }
 
-        let avatarList = ["EA", "MO", "EL", "PA", "PE", "GO", "KA", "UN"];
-        avatarList = avatarList.slice(0, playerCount);
+        let avatarList = [];
+        for (let i = 0; i < playerCount; i++) {
+            avatarList.push(String.fromCharCode(97 + avatarIds[i]));
+        }
         let teamAvatars = utils.asciiToHex(avatarList.join(""));
-
+        
         let stackId = gameInstance.methods.newGame.cacheSend(playerCount, maxBlocksPerTurn, playerAddresses, teamAvatars, {from: selectedAddress});
         
         dispatch({

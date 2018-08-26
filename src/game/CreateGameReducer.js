@@ -2,7 +2,8 @@ const initialState = {
     input: {},
     playerCount: 2,
     validationMap: {},
-    pendingNewGame: null
+    pendingNewGame: null,
+    avatar: [0, 1, 2, 3, 4, 5, 6, 7]
 }
 
 const CreateGameReducer = (state = initialState, action) => {
@@ -60,6 +61,17 @@ const CreateGameReducer = (state = initialState, action) => {
 
       return Object.assign({}, state, {
           pendingNewGame: newValue
+      });
+  }
+
+  if (action.type === 'SWAP_AVATAR')
+  {
+      const AVATAR_COUNT = 22;
+      let index = action.payload;
+      let newValue = (state.avatar[index] + 1) % AVATAR_COUNT;
+      let newAvatarArray = Object.assign([], [...state.avatar], {[index]: newValue});
+      return Object.assign({}, state, {
+          avatar: newAvatarArray
       });
   }
 

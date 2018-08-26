@@ -63,7 +63,7 @@ class OpenGame extends Component {
         }
         else {
             gameLinks.push(
-                <div style={{marginTop:5}}><span className="linkSpan" onClick={(event) => this.createGame(event)}>No existing games.  Click to create a new game.</span></div>
+                <div key="create" style={{marginTop:5}}><span className="linkSpan" onClick={(event) => this.createGame(event)}>No existing games.  Click to create a new game.</span></div>
             );
         }
 

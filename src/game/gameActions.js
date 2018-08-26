@@ -139,25 +139,3 @@ export function declareWinner(drizzle, gameId, winnerId) {
     );
   }
 }
-
-export function findNewGameEvent(drizzle, gameId) {
-  return function(dispatch) {
-    //let { eth } = drizzle.web3;
-    let gameInstance = drizzle.contracts.WorldGame;
-
-    console.log(drizzle);
-    console.log(gameInstance);
-    console.log(gameInstance.events.NewGame);
-
-    drizzle.contracts.WorldGame.events.NewGame({ fromBlock: 0, toBlock: 'latest' }, (error, event) => {
-        console.log(error, event);
-    });
-
-    /*
-    .on('data', (event) => console.log(event))
-    .on('changed', (event) => console.log(event))
-    .on('error', (error) => console.log(error));
-    */
-    
-  }
-}

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types';
-import { increasePlayerCount, reducePlayerCount, updateInput, updateValidation, startNewGame } from './CreateGameActions';
+import { increasePlayerCount, reducePlayerCount, updateInput, updateValidation, startNewGame, swapAvatar } from './CreateGameActions';
 import { openGame } from './MenuActions';
 import './CreateGame.css';
 import './Common.css';
@@ -15,6 +15,8 @@ class CreateGame extends Component {
         this.reducePlayerCount = this.reducePlayerCount.bind(this);
         this.startNewGame = this.startNewGame.bind(this);
         this.openGame = this.openGame.bind(this);
+        this.getAvatarFromTeamId = this.getAvatarFromTeamId.bind(this);
+        this.swapAvatar = this.swapAvatar.bind(this);
     }
 
     componentDidMount() {
@@ -53,33 +55,47 @@ class CreateGame extends Component {
 
         let { utils } = this.context.drizzle.web3;
         let playerMap = {};
+        let avatarMap = {};
         let validationMap = {};
 
         let { input, playerCount } = this.props.createGame;
         let validAddresses = true;
         for (let i = 1; i <= playerCount; i++) {
             let playerVal = input["player" + i] || "";
+            let avatarId = this.props.createGame.avatar[i];
 
             if (
                 playerVal === "" || 
                 !utils.isAddress(playerVal) || 
-                playerMap.hasOwnProperty(playerVal.toLowerCase())
+                playerMap.hasOwnProperty(playerVal.toLowerCase()) ||
+                avatarMap.hasOwnProperty(avatarId)
             ) {
                 validAddresses = false;
                 validationMap["player" + i] = false;
             }
             else {
                 playerMap[playerVal.toLowerCase()] = true;
+                avatarMap[avatarId] = true;
                 validationMap["player" + i] = true;
             }
         }
 
         if (validAddresses) {
-            this.props.dispatch(startNewGame(this.context.drizzle, playerCount, input));
+            this.props.dispatch(startNewGame(this.context.drizzle, playerCount, input, this.props.createGame.avatar));
         }
         else {
             this.props.dispatch(updateValidation(validationMap));
         }
+    }
+
+    getAvatarFromTeamId(teamId) {
+        const AVATAR_STRINGS = ["unicorn", "moose", "eagle", "grizzly", "penguin", "elephant", "panda", "lion", "zebra", "owl", "chicken", "triceratops", "crocodile", "spider", "monkey", "mouse", "dog", "cat", "beaver", "monster", "llama", "pig"];
+        const avatarId = this.props.createGame.avatar[teamId];
+        return AVATAR_STRINGS[avatarId];
+    }
+
+    swapAvatar(event, i) {
+        this.props.dispatch(swapAvatar(i));
     }
 
     render() {
@@ -90,7 +106,14 @@ class CreateGame extends Component {
       for (let i = 1; i <= playerCount; i++) {
           let playerVal = input["player" + i] || "";
           let notValid = validationMap.hasOwnProperty("player" + i) && validationMap["player" + i] === false;
-          playerAddressInputs.push(<input key={i} disabled={false} autoComplete="off" placeholder={"Player " + i} type="text" className={"inputBox" + (notValid ? " notValid" : "")} name={"player" + i} value={playerVal} onChange={this.handleInputChange} />);
+          playerAddressInputs.push(
+              <div key={i} >
+                  <input disabled={false} autoComplete="off" placeholder={"Player " + i} type="text" className={"inputBox" + (notValid ? " notValid" : "")} name={"player" + i} value={playerVal} onChange={this.handleInputChange} />
+                  <div onClick={(event) => this.swapAvatar(event, i-1)} style={{width:70, height:70, marginTop:5, textAlign:"center", background:(notValid ? "#fdd" : "")}}>
+                      <img src={"/" + this.getAvatarFromTeamId(i-1) + ".png"} alt="" style={{maxWidth:70, maxHeight:70}}/>
+                  </div>
+              </div>
+          );
       }
 
       let txHash = null;

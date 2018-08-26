@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { selectTile, moveOrAttack, deployAndEndTurn, hoverTile, syncGameData, showOverlay, cacheBlockHash, declareWinner, findNewGameEvent } from './GameActions'
+import { selectTile, moveOrAttack, deployAndEndTurn, hoverTile, syncGameData, showOverlay, cacheBlockHash, declareWinner } from './GameActions'
 import ArrowControl from './ArrowControl';
 import PropTypes from 'prop-types';
 import './Game.css';
@@ -14,6 +14,7 @@ class Game extends Component {
         this.showOverlay = this.showOverlay.bind(this);
         this.moveOrAttack = this.moveOrAttack.bind(this);
         this.cancelTile = this.cancelTile.bind(this);
+        this.outsideClick = this.outsideClick.bind(this);
         this.hoverTile = this.hoverTile.bind(this);
         this.cancelHover = this.cancelHover.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -24,7 +25,6 @@ class Game extends Component {
         this.getTilesFromData = this.getTilesFromData.bind(this);
         this.forceNextBlock = this.forceNextBlock.bind(this);
         this.declareWinner = this.declareWinner.bind(this);
-        this.syncAvatars = this.syncAvatars.bind(this);
 
         this.regionNames = [
             "HAWAII",
@@ -126,13 +126,6 @@ class Game extends Component {
       this.props.dispatch(showOverlay(id));
     }
 
-    syncAvatars(event) {
-        this.props.dispatch(findNewGameEvent(
-            this.context.drizzle, 
-            this.props.gameId
-        ));
-    }
-
     moveOrAttack(event) {
       event.preventDefault();
       let toRegionName = event.currentTarget.id;
@@ -192,6 +185,10 @@ class Game extends Component {
       this.props.dispatch(selectTile(null, null, null));
     }
 
+    outsideClick(event) {
+      this.props.dispatch(selectTile(null, null, null));
+    }
+
     hoverTile(event) {
       event.preventDefault();
       let id = event.currentTarget.id;
@@ -219,7 +216,20 @@ class Game extends Component {
         return "rgba(" + red + ", " + blue + ", " + green + ", 0.2)";
     }
 
-    getAvatarFromTeamId(teamId) {
+    getAvatarFromTeamId(avatarIds, teamId) {
+
+        const AVATAR_STRINGS = ["unicorn", "moose", "eagle", "grizzly", "penguin", "elephant", "panda", "lion", "zebra", "owl", "chicken", "triceratops", "crocodile", "spider", "monkey", "mouse", "dog", "cat", "beaver", "monster", "llama", "pig"];
+
+        if (avatarIds) {
+            if (teamId < avatarIds.length) {
+                let charCode = avatarIds.charCodeAt(teamId);
+                charCode = charCode >= 97 ? charCode - 97 : 0;
+                if (charCode < AVATAR_STRINGS.length) {
+                    return AVATAR_STRINGS[charCode];
+                }
+            }
+        }
+        
         if (teamId === 0) {
             return "unicorn";
         }
@@ -248,7 +258,7 @@ class Game extends Component {
         return null;
     }
 
-    getTilesFromData(regionOwnersList, regionSoldiers) {
+    getTilesFromData(regionOwnersList, regionSoldiers, avatarIds) {
         let colorIndex = 0;
         let mapTiles = [];
         let gapTiles = [];
@@ -471,7 +481,7 @@ class Game extends Component {
             let regionOwner = regionOwnersList ? parseInt(regionOwnersList[i], 10) : 255;
             let soldierCount = regionSoldiers ? parseInt(regionSoldiers[i], 10) : 0;
             mapTiles[i].teamId = regionOwner;
-            mapTiles[i].avatar = this.getAvatarFromTeamId(regionOwner);
+            mapTiles[i].avatar = this.getAvatarFromTeamId(avatarIds, regionOwner);
             mapTiles[i].soliders = soldierCount;
             mapTiles[i].regionId = this.regionNameToId(mapTiles[i].name);
             mapTiles[i].display = this.regionIdToDisplay(mapTiles[i].regionId);
@@ -501,7 +511,7 @@ class Game extends Component {
     }
 
     const NO_PLAYER = 255;
-    let { eth } = this.context.drizzle.web3;
+    let { eth, utils } = this.context.drizzle.web3;
     let { selectedAddress = "" } = eth.currentProvider.publicConfigStore.getState();
     
     let gameId = this.props.gameId;
@@ -524,6 +534,7 @@ class Game extends Component {
     let regionSoldiers = null;
 
     let undeployedSoldiers = null;
+    let playerRewardPoints = null;
 
     let actionCount = 0; 
     let actionList = [];
@@ -531,9 +542,10 @@ class Game extends Component {
     let blockNumber = 0;
     let turnTeamId = null;
     let turnNum = null;
-    //let maxBlocksPerTurn = null;
+    let maxBlocksPerTurn = null;
     let playerCount = null;
-    let playerAddresses = null;    
+    let playerAddresses = null;
+    let avatarIds = null;
     if (
         this.props.WorldGame.initialized && 
         soldiersByRegionKey !== null && 
@@ -551,7 +563,17 @@ class Game extends Component {
         regionOwnersList = soldiersByRegion[0];
         regionSoldiers = soldiersByRegion[1];
 
-        undeployedSoldiers = this.props.WorldGame.undeployedSoldiers[undeployedSoldiersKey].value;
+        let undeployedSoldiersResp = this.props.WorldGame.undeployedSoldiers[undeployedSoldiersKey].value;
+        undeployedSoldiers = undeployedSoldiersResp[0];
+        playerRewardPoints = undeployedSoldiersResp[1];
+
+        let turnAndPlayerInfo = this.props.WorldGame.turnAndPlayerInfo[turnAndPlayerInfoKey].value;
+        turnTeamId = parseInt(turnAndPlayerInfo[0], 10);
+        turnNum = parseInt(turnAndPlayerInfo[1], 10);
+        maxBlocksPerTurn = parseInt(turnAndPlayerInfo[2], 10);
+        playerCount = parseInt(turnAndPlayerInfo[3], 10);
+        playerAddresses = turnAndPlayerInfo[4];
+        avatarIds = utils.hexToAscii(turnAndPlayerInfo[5]);
 
         let pendingActions = this.props.WorldGame.pendingActions[pendingActionsKey].value;
         let pendingActionOutcomes = this.props.WorldGame.pendingActionOutcomes[pendingActionOutcomesKey].value;
@@ -579,39 +601,56 @@ class Game extends Component {
             let toRegion = parseInt(toRegionList[i], 10);
             let owner = parseInt(regionOwnersList[toRegion], 10);
             let submitBlock = parseInt(submitBlockList[i], 10);
+            let isFriendly = false;
+            let outcomeBlock = submitBlock + 2;
+            if (owner === turnTeamId || owner === NO_PLAYER) {
+                isFriendly = true;
+                outcomeBlock = submitBlock;
+            }
+            
             actionList.push({
                 fromRegion: parseInt(fromRegionList[i], 10), 
                 toRegion: toRegion, 
                 soldierCount: parseInt(moveSoldierCountList[i], 10), 
                 submitBlock: submitBlock,
-                hasOutcome: (blockNumber > submitBlock + 1), 
-                outcomeBlock: (submitBlock + 2), 
+                hasOutcome: (blockNumber >= outcomeBlock), 
+                outcomeBlock: outcomeBlock, 
                 remainingAttackers: parseInt(remainingAttackerList[i], 10), 
                 remainingDefenders: parseInt(remainingDefenderList[i], 10), 
-                owner: owner
+                owner: owner,
+                isFriendly: isFriendly
             });
         }
 
-        let turnAndPlayerInfo = this.props.WorldGame.turnAndPlayerInfo[turnAndPlayerInfoKey].value;
-        turnTeamId = parseInt(turnAndPlayerInfo[0], 10);
-        turnNum = turnAndPlayerInfo[1];
-        //maxBlocksPerTurn = turnAndPlayerInfo[2];
-        playerCount = parseInt(turnAndPlayerInfo[3], 10);
-        playerAddresses = turnAndPlayerInfo[4];
-        if (playerAddresses !== null && playerCount !== null) {
+        if (playerAddresses !== null && playerCount !== null && avatarIds !== null) {
             playerAddresses = playerAddresses.slice(0, playerCount);
+            avatarIds = avatarIds.substring(0, playerCount);
+
+            // Prevents duplicate avatars being registered
+            let checkDuplicateAvatar = {};
+            for (let i = 0; i < avatarIds.length; i++) {
+                let id = avatarIds[i];
+                if (checkDuplicateAvatar.hasOwnProperty(id)) {
+                    avatarIds = null;
+                    break;
+                }
+
+                checkDuplicateAvatar[id] = true;
+            }
         }
 
         initialized = true;
     }
 
     let yourUndeployedSoldiers = 0;
+    let youPlayerRewardPoints = 0;
     let playerNum = NO_PLAYER;
     if (selectedAddress && playerAddresses) {
         for (let i = 0; i < playerAddresses.length; i++) {
             if (selectedAddress.toLowerCase() === playerAddresses[i].toLowerCase()) {
                 playerNum = i;
-                yourUndeployedSoldiers = parseInt(undeployedSoldiers[i], 10);
+                yourUndeployedSoldiers = i < undeployedSoldiers.length ? parseInt(undeployedSoldiers[i], 10) : 0;
+                youPlayerRewardPoints = i < playerRewardPoints.length ? parseInt(playerRewardPoints[i], 10) : 0;
             }
         }
     }
@@ -644,6 +683,11 @@ class Game extends Component {
     let actionMessageByRegion = {};
     let actionSoldiersByRegion = {};
     let waitingForActions = false;
+    let endTurnByBlock = null;
+    if (turnNum !== null && maxBlocksPerTurn !== null) {
+        endTurnByBlock = turnNum + maxBlocksPerTurn;
+    }
+
     let waitingForBlock = 0;
     let renderedActions = [];
     for (let i = 0; i < actionList.length; i++) {
@@ -663,22 +707,22 @@ class Game extends Component {
         let remainingDefenders = actionEntry.remainingDefenders;
         let remainingAttackers = actionEntry.remainingAttackers;
 
-        let lostDefenders = initialDefenders > remainingDefenders ? initialDefenders - remainingDefenders : 0;
-        let lostAttackers = initialAttackers > remainingAttackers ? initialAttackers - remainingAttackers : 0;
-
         if (!actionSoldiersByRegion.hasOwnProperty(actionEntry.toRegion)) {
             actionSoldiersByRegion[actionEntry.toRegion] = 0;
         }
         actionSoldiersByRegion[actionEntry.toRegion] += initialAttackers;
 
         let outcomeClass = "outcomePending";
-        let outcomeText = "Waiting for block #" + (actionEntry.submitBlock + 2) + ".  Current block is #" + blockNumber + ".";
+        let outcomeText = "Waiting for block #" + actionEntry.outcomeBlock + ".  Current block is #" + blockNumber + ".";
         if (actionEntry.hasOutcome) {
             if (isFriendly) {
                 outcomeClass = "outcomeWon";
                 outcomeText = currentPlayerStr + " moved " + initialAttackers + " " + (initialAttackers === 1 ? "soldier" : "soldiers") + ".";
             }
             else {
+                let lostDefenders = initialDefenders > remainingDefenders ? initialDefenders - remainingDefenders : 0;
+                let lostAttackers = initialAttackers > remainingAttackers ? initialAttackers - remainingAttackers : 0;
+      
                 if (remainingDefenders === 0) {
                     outcomeClass = "outcomeWon";
                     outcomeText = currentPlayerStr + " won the attack!  " + currentPlayerStr + " lost " + lostAttackers + " " + (lostAttackers === 1 ? "soldier" : "soldiers") + ", and killed " + lostDefenders + " " + (lostDefenders === 1 ? "soldier" : "soldiers") + ".";
@@ -693,6 +737,9 @@ class Game extends Component {
             waitingForActions = true;
             waitingForBlock = Math.max(waitingForBlock, actionEntry.outcomeBlock);
         }
+        
+        let finishTurnBlock = actionEntry.outcomeBlock + 99;
+        endTurnByBlock = (endTurnByBlock === null) ? finishTurnBlock : Math.min(endTurnByBlock, finishTurnBlock);
 
         renderedActions.push(
             <li key={i}>
@@ -704,7 +751,16 @@ class Game extends Component {
         );
     }
 
-    let { mapTiles, gapTiles } = this.getTilesFromData(regionOwnersList, regionSoldiers);
+    let endTurnMinutes = 0;
+    if (endTurnByBlock !== null && endTurnByBlock > blockNumber) {
+        let remainingBlocks = endTurnByBlock - blockNumber;
+        endTurnMinutes = Math.floor(remainingBlocks/4);
+    }
+
+    let endTurnHours = Math.floor(endTurnMinutes/60);
+    endTurnMinutes %= 60;
+
+    let { mapTiles, gapTiles } = this.getTilesFromData(regionOwnersList, regionSoldiers, avatarIds);
 
     let selectedTeam = NO_PLAYER;
     let selectedCenterPos = {left:0, top:0};
@@ -820,19 +876,19 @@ class Game extends Component {
             >
                 {tile.display}
                 {(selectedTileRegion === null && yourTurn && hasHover && (isYourTeam || isUnowned) && !isSelected) ? 
-                    <div style={{position:"absolute", zIndex:10, color:"#00cc00", background:"rgba(0,0,0,0.7)", textAlign:"center", width:90, padding:10, fontSize:24, top:(topPos+10), left:(leftPos-20)}}>SELECT</div> : 
+                    <div style={{position:"absolute", zIndex:5, color:"#00cc00", background:"rgba(0,0,0,0.7)", textAlign:"center", width:90, padding:10, fontSize:24, top:(topPos+10), left:(leftPos-20)}}>SELECT</div> : 
                     null
                 }
                 {(queuedAction === null && isNeighbor && hasHover && isFriendly) ? 
-                    <div style={{position:"absolute", zIndex:10, color:"#00cc00", background:"rgba(0,0,0,0.7)", textAlign:"center", width:90, padding:10, fontSize:24, top:(topPos+10), left:(leftPos-20)}}>MOVE</div> : 
+                    <div style={{position:"absolute", zIndex:5, color:"#00cc00", background:"rgba(0,0,0,0.7)", textAlign:"center", width:90, padding:10, fontSize:24, top:(topPos+10), left:(leftPos-20)}}>MOVE</div> : 
                     null
                 }
                 {(queuedAction === null && isNeighbor && hasHover && !isFriendly) ? 
-                    <div style={{position:"absolute", zIndex:10, color:"#ff0000", background:"rgba(0,0,0,0.7)", textAlign:"center", width:90, padding:10, fontSize:24, top:(topPos+10), left:(leftPos-20)}}>ATTACK</div> : 
+                    <div style={{position:"absolute", zIndex:5, color:"#ff0000", background:"rgba(0,0,0,0.7)", textAlign:"center", width:90, padding:10, fontSize:24, top:(topPos+10), left:(leftPos-20)}}>ATTACK</div> : 
                     null
                 }
                 {(!hideQueueSummary && queuedAction) ? 
-                    <div style={{position:"absolute", zIndex:10, color:(queuedAction === "ATTACKING" ? "#ff0000" : "#00cc00"), background:"rgba(80,80,80,0.9)", textAlign:"center", width:90, padding:10, fontSize:16, top:(topPos+5), left:(leftPos-20)}}>{queuedAction}<div>{"+" + queuedSoldiers}</div></div> : 
+                    <div style={{position:"absolute", zIndex:5, color:(queuedAction === "ATTACKING" ? "#ff0000" : "#00cc00"), background:"rgba(80,80,80,0.9)", textAlign:"center", width:90, padding:10, fontSize:16, top:(topPos+5), left:(leftPos-20)}}>{queuedAction}<div>{"+" + queuedSoldiers}</div></div> : 
                     null
                 }
                 {(queuedAction === null && isNeighbor && isFriendly) ? 
@@ -879,7 +935,7 @@ class Game extends Component {
     let renderPlayerList = [];
     if (playerAddresses) {
         for (let i = 0; i < playerAddresses.length; i++) {
-            let avatar = this.getAvatarFromTeamId(i);
+            let avatar = this.getAvatarFromTeamId(avatarIds, i);
             let extraMsg = "";
             if (i === playerNum) {
                 extraMsg = "(you)";
@@ -927,7 +983,7 @@ class Game extends Component {
                 />
             }
             <div className="menuGap"></div>
-            <div style={{background:"#fafafa", width: 1710}}>
+            <div onClick={this.outsideClick} style={{background:"#fafafa", width: 1710}}>
                 {initialized && (
                     <div style={{padding: 20}}>
                         {hasWinner ? (
@@ -952,7 +1008,9 @@ class Game extends Component {
                                 ) : (
                                     <span>
                                         {"You are player " + (playerNum + 1) + ". "}
-                                        {"You control " + yourRegionCount + " regions and have " + yourUndeployedSoldiers + " undeployed " + (yourUndeployedSoldiers === 1 ? "soldier" : "soldiers") + ". Interact with the map to move, attack or deploy soldiers."}
+                                        {"You control " + yourRegionCount + " regions (worth " + youPlayerRewardPoints + " points) and have " + yourUndeployedSoldiers + " undeployed " + (yourUndeployedSoldiers === 1 ? "soldier" : "soldiers") + ". "}
+                                        {yourTurn && endTurnByBlock !== null ? <span>You must end your turn by block #{endTurnByBlock} (~{endTurnHours}h {endTurnMinutes}min). </span> : ""}
+                                        {<span>Interact with the map to move, attack or deploy soldiers. </span>}
                                     </span>
                                 )}
                                 <table style={{marginTop:20}}><tbody><tr>{renderPlayerList}</tr></tbody></table>
@@ -966,7 +1024,6 @@ class Game extends Component {
                                     <div>
                                         <button onClick={(event) => this.endTurn(event, turnNum, waitingForActions, waitingForBlock)} className={waitingForActions ? "btnDisabled" : "btn"} style={{marginBottom:0}}>End your turn without deploying soldiers</button>
                                         <button onClick={(event) => this.forceNextBlock(event, blockNumber)} className="btn" style={{marginBottom:0}}>Force next block</button>
-                                        <button onClick={(event) => this.syncAvatars(event)} className="btn" style={{marginBottom:0}}>Sync Avatars</button>
                                         {waitingForActions && <div className="errorExplainer">You cannot end turn until block #{waitingForBlock}</div>}
                                     </div>
                                 )}
@@ -980,7 +1037,7 @@ class Game extends Component {
                 {renderedGaps}   
                 {renderedArrows}               
             </div>
-            <div style={{background: "#fafafa", width: 1710, height: 100}}>
+            <div onClick={this.outsideClick} style={{background: "#fafafa", width: 1710, height: 100}}>
             </div>
         </div>
     )
