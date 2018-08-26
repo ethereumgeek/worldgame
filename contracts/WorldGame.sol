@@ -178,7 +178,7 @@ contract WorldGame {
 
         _;
     }
-
+    
     /* Modifier to only allow moving soldiers between adjacent regions that exist. */
     modifier onlyNeighbors(uint32 regionFrom, uint32 regionTo) {
 
@@ -281,16 +281,25 @@ contract WorldGame {
     )
         public 
         onlyIfPlayersTurn(gameId, turnNum) 
-        onlyNeighbors(regionFrom, regionTo)
+        onlyNeighbors(regionFrom, regionTo) 
     {
         GameData storage game = gameDataArray[gameId];
+        uint32 i;
 
+        /* Loop through all queued actions. */
+        for (i = 0; i < game.actionCount; i++) {
+            /* Ensure region doesn't already have a queued action. */
+            require(
+                regionTo != getData32(game.toRegionList, i), 
+                "Region already has queued action."
+            );
+        }
         require(game.actionCount < MAX_ACTIONS_PER_TURN, "Only 8 actions are allowed per turn");
         require(game.regionSoldiers[regionFrom] > moveSoldierCount, "Must have sufficient soldiers");
         require(game.turnTeamId == getData8(game.regionOwners, regionFrom), "Must own territory");
 
         /* Index to use for creating a new action */
-        uint32 i = game.actionCount;
+        i = game.actionCount;
 
         /* Remove soldiers from region */
         game.regionSoldiers[regionFrom] -= moveSoldierCount;
@@ -346,7 +355,7 @@ contract WorldGame {
         }
 
         /* It's the next player's turn */
-        game.turnTeamId = (game.turnTeamId + 1) % game.playerCount;
+        game.turnTeamId = getNextTurnTeamId(gameId);
         game.turnNum = uint32(block.number);
 
         /* Give bonus soldiers to next team based on what regions they control. */
@@ -375,7 +384,7 @@ contract WorldGame {
         }
 
         /* It's the next player's turn */
-        game.turnTeamId = (game.turnTeamId + 1) % game.playerCount;
+        game.turnTeamId = getNextTurnTeamId(gameId);
         game.turnNum = uint32(block.number);
 
         /* Give bonus soldiers to next team based on what regions they control. */
@@ -634,6 +643,42 @@ contract WorldGame {
 
         /* Reset action count to 0. */
         game.actionCount = 0;
+    }
+
+    /// @notice Player who's turn is next. 
+    /// @param gameId Id of game
+    /// @return Next player's turn
+    function getNextTurnTeamId(
+        uint256 gameId
+    ) 
+        private 
+        view 
+        returns(uint32) 
+    {
+        GameData storage game = gameDataArray[gameId];
+        bool[MAX_PLAYERS] memory playerOwnsRegion;
+        bool hasNotOwned = false;
+        uint32 i;
+        
+        for (i = 0; i < REGION_COUNT; i++) {
+            uint32 regionOwner = getData8(game.regionOwners, i);
+            if (regionOwner == NOT_OWNED) {
+                hasNotOwned = true;
+            }
+            else {
+                playerOwnsRegion[regionOwner] = true;
+            }
+        }
+
+        uint32 turnTeamId = game.turnTeamId;
+        for (i = 0; i < game.playerCount; i++) {
+            turnTeamId = (turnTeamId + 1) % game.playerCount;
+            if (hasNotOwned || playerOwnsRegion[turnTeamId]) {
+                break;
+            }
+        }
+
+        return turnTeamId;
     }
 
     /// @notice Declare victory for a team.

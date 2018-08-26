@@ -104,6 +104,7 @@ class Overlay extends Component {
         let regionId = NO_REGION;
         let regionName = null;
         let yourTurn = false;
+        let notPlaying = (this.props.playerNum === NO_PLAYER);
         if (selectedOverlayId !== null && this.props.data !== null) {
             let data = this.props.data;
             let tile = data.tile;
@@ -121,15 +122,20 @@ class Overlay extends Component {
             }
 
             if (avatar !== null && teamId !== NO_PLAYER) {
-                
-                if (isYourTeam) {
-                    ownedByStr = "you";
+
+                if (notPlaying) {
+                    ownedByStr = "player " + (teamId + 1);
                 }
                 else {
-                    ownedByStr = "opponent";
-                }
+                    if (isYourTeam) {
+                      ownedByStr = "you";
+                    }
+                    else {
+                        ownedByStr = "opponent";
+                    }
 
-                ownedByStr += " (player " + (teamId + 1) + ")";
+                    ownedByStr += " (player " + (teamId + 1) + ")";
+                }
             }
 
             regionId = tile.regionId;
@@ -147,6 +153,7 @@ class Overlay extends Component {
             selectedOverlayId, 
             regionDisplay, 
             isYourTeam, 
+            notPlaying,
             isNotOwned, 
             yourUndeployedSoldiers, 
             soldiers, 
@@ -173,6 +180,7 @@ class Overlay extends Component {
       let {
           selectedOverlayId, 
           yourTurn, 
+          notPlaying, 
           regionDisplay, 
           yourUndeployedSoldiers, 
           soldiers, 
@@ -200,7 +208,7 @@ class Overlay extends Component {
                           {yourTurn ? (
                               <div className="yourTurnMsg">It's your turn</div>
                           ) : (
-                              <div className="notYourTurnMsg">It's not your turn</div>
+                              <div className="notYourTurnMsg">{notPlaying ? "You are not playing" : "It's not your turn"}</div>
                           )}
                           <div className="summaryText">Owned by: {ownedByStr}</div>
                           {avatar !== null && (
@@ -208,19 +216,19 @@ class Overlay extends Component {
                           )}
                           <div className="summaryText">Soldiers: {soldiers}</div>
                           <div className="summaryText">Points for owning: {points}</div>
-                          {reachedMaxActions && <div className="errorExplainer">You've reached the limit of 8 moves and attacks per turn</div>}
+                          {reachedMaxActions && <div className="errorExplainer">{yourTurn ? "You've reached" : "Reached"} the limit of 8 moves and attacks per turn</div>}
                           {canMoveOrAttack && (
                           <div>
                               <input disabled={false} autoComplete="off" placeholder="Soldiers" type="text" className="inputBoxShort" name="moveSoldiers" value={input.moveSoldiers || ""} onChange={this.handleInputChange} />
                               <button className="btn" onClick={this.moveOrAttack}>Move or attack</button>
-                              <div className={notValidMoveSoldiers ? "errorExplainer" : "inputExplainer"}>Maximum {movableSoldiers} soldiers</div>
+                              <div className={notValidMoveSoldiers ? "errorExplainer" : "inputExplainer"}>Maximum {movableSoldiers} {movableSoldiers === 1 ? "soldier" : "soldiers"}</div>
                           </div>
                           )}
                           {canDeploySoldiers && (
                               <div>
                                   <input disabled={false} autoComplete="off" placeholder="Soldiers" type="text" className="inputBoxShort" name="deploySoldiers" value={input.deploySoldiers || ""} onChange={this.handleInputChange} />
                                   <button className={this.props.waitingForActions ? "btnDisabled" : "btn"} onClick={this.deployAndEndTurn}>Deploy and end turn</button>
-                                  <div className={notValidDeploySoldiers ? "errorExplainer" : "inputExplainer"}>Maximum {yourUndeployedSoldiers} soldiers</div>
+                                  <div className={notValidDeploySoldiers ? "errorExplainer" : "inputExplainer"}>Maximum {yourUndeployedSoldiers} {yourUndeployedSoldiers === 1 ? "soldier" : "soldiers"}</div>
                                   {this.props.waitingForActions && <div className={notValidDeploySoldiers ? "errorExplainer" : "inputExplainer"}>You cannot end turn until block #{this.props.waitingForBlock}</div>}
                               </div>
                           )}

@@ -155,6 +155,7 @@ function choosePendingActions(checkRegionOwners, checkRegionSoliders, playerNum,
 
     let fromList = [];
     let toList = [];
+    let existingToEntries = {};
 
     if (playerNum === 0 && offset > 10) {
         return { fromList, toList };
@@ -166,9 +167,10 @@ function choosePendingActions(checkRegionOwners, checkRegionSoliders, playerNum,
             let neighborList = REGION_NEIGHBORS[regionId];
             for (let j = 0; j < neighborList.length; j++) {
                 let toRegionId = neighborList[j];
-                if (checkRegionOwners[toRegionId] !== playerNum) {
+                if (checkRegionOwners[toRegionId] !== playerNum && !existingToEntries.hasOwnProperty(toRegionId)) {
                     fromList.push(regionId);
                     toList.push(toRegionId);
+                    existingToEntries[toRegionId] = true;
                     break;
                 }
             }
@@ -265,7 +267,6 @@ async function deployAndCheckCounts(
             }
             else {
                 assert.equal(checkRegionOwners[i], regionOwner, REGION_NAMES[i] + " region owner doesn't match");
-                //console.log(REGION_NAMES[i] + " doesn't match with " + checkRegionOwners[i] + " !== " + regionOwner);
             }
         }
         if (checkRegionSoliders[i] !== regionSoldiers) {
@@ -274,10 +275,12 @@ async function deployAndCheckCounts(
             }
             else {
                 assert.equal(checkRegionSoliders[i], regionSoldiers, REGION_NAMES[i] + " soldier count doesn't match");
-                //console.log(REGION_NAMES[i] + " doesn't match with " + checkRegionSoliders[i] + " !== " + regionSoldiers);
             }
         }
     }
+
+    let bonus = calculateBonus(nextTeamId, checkRegionOwners);
+    checkUndeployedSoldiers[nextTeamId] += bonus;
 
     for (let i = 0; i < PLAYER_COUNT; i++) {
         let undeployedSoldiers = undeployedSoldiersArr[i];
@@ -288,7 +291,6 @@ async function deployAndCheckCounts(
             else {
                 console.log("Action caused Player " + i + "'s bonus to change.");
             }
-          //console.log("Player " + i + " undeployed doesn't match with " + checkUndeployedSoldiers[i] + " !== " + undeployedSoldiers);
         }
     }
 
@@ -358,7 +360,7 @@ contract('WorldGame', function(accounts) {
                     NO_ACCOUNT, 
                     NO_ACCOUNT
                 ], 
-                TEAM_AVATARS,
+                web3.utils.asciiToHex(TEAM_AVATARS),
                 {from: accounts[0]}
             );
             
@@ -369,7 +371,7 @@ contract('WorldGame', function(accounts) {
             if (args) {
                 gameId = args.gameId.toString();
                 turnNum = args.turnNum.toString();
-                teamAvatars = web3.toAscii(args.teamAvatars);
+                teamAvatars = web3.utils.hexToAscii(args.teamAvatars);
                 gasTotal += tx.receipt.gasUsed;
                 console.log("New game created with gameId " + gameId);
                 console.log("Avatar list " + teamAvatars.match(/.{1,2}/g).join(","));
@@ -382,19 +384,19 @@ contract('WorldGame', function(accounts) {
             let checkRegionOwners = [];
             let checkRegionSoliders = [];
             let checkUndeployedSoldiers = [];
+
             for (let i = 0; i < REGION_COUNT; i++) {
                 checkRegionOwners.push(NOT_OWNED);
                 checkRegionSoliders.push(0);
             }
+
             for (let i = 0; i < PLAYER_COUNT; i++) {
                 checkUndeployedSoldiers.push(20);
             }
 
-            //let logCounts = false;
-
             for (let loop = 0; loop < 1000; loop++) {
                 let deployRegion = chooseRegionToDeploy(checkRegionOwners, playerNum, loop);
-                let deployCount = Math.floor(checkUndeployedSoldiers[playerNum] / 2); //Math.min(checkUndeployedSoldiers[playerNum], 10);
+                let deployCount = Math.floor(checkUndeployedSoldiers[playerNum] / 2);
                 if (deployRegion === NO_REGION) {
                     deployCount = 0;
                 }
@@ -402,10 +404,6 @@ contract('WorldGame', function(accounts) {
                 checkRegionOwners[deployRegion] = playerNum;
                 checkRegionSoliders[deployRegion] += deployCount;
                 checkUndeployedSoldiers[playerNum] -= deployCount;
-
-                let nextPlayer = (playerNum + 1) % PLAYER_COUNT;
-                let bonus = calculateBonus(nextPlayer, checkRegionOwners);
-                checkUndeployedSoldiers[nextPlayer] += bonus;
 
                 let { 
                     gasUsed, 
@@ -431,19 +429,25 @@ contract('WorldGame', function(accounts) {
                     checkMoveSoldierCountList
                 );
 
+                /* If next player is current player then we have a winner */
+                if (playerNum == nextTeamId) {
+                    await worldGameInstance.declareWinner(
+                      gameId,
+                      nextTeamId,
+                      {from: accounts[0]}
+                    );
+
+                    console.log("Winner is player " + playerNum + "!!!");
+
+                    break;
+                }
+
                 checkRegionOwners = regionOwnersArr;
                 checkRegionSoliders = regionSoldiersArr;
                 checkUndeployedSoldiers = undeployedSoldiersArr;
                 turnNum = nextTurnNum;
                 playerNum = nextTeamId;
                 gasTotal += gasUsed;
-
-                //if (logCounts) {
-                    //console.log("AFTER");
-                    //console.log(checkRegionOwners);
-                    //console.log(checkRegionSoliders);
-                    //console.log(checkUndeployedSoldiers);
-                //}
 
                 let { fromList, toList } = choosePendingActions(checkRegionOwners, checkRegionSoliders, playerNum, loop);
 
@@ -484,21 +488,13 @@ contract('WorldGame', function(accounts) {
                     {from: accounts[0]}
                 );
 
-                assert.equal(checkActionCount, expectedActions, 'Expected 3 actions should be queued.');
+                assert.equal(checkActionCount, expectedActions, 'Expected ' + expectedActions + ' actions should be queued.');
                 
                 if (loop % 10 === 0) {
                     printSummary(checkRegionOwners, checkRegionSoliders);
                 }
                 
-                if (deployRegion === NO_REGION) {
-                    await worldGameInstance.declareWinner(
-                      gameId,
-                      nextPlayer,
-                      {from: accounts[0]}
-                    );
 
-                    break;
-                }
 
             }
             

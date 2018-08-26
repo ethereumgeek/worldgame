@@ -47,6 +47,10 @@ class OpenGame extends Component {
         }
     }
 
+    createGame(event) {
+        this.props.onSelectPage("create");
+    }
+
     render() {
 
         let gameLinks = [];
@@ -56,6 +60,11 @@ class OpenGame extends Component {
                     <div key={i} style={{marginTop:5}}><span className="linkSpan" onClick={(event) => this.openGameById(event, i)}>Game #{i}</span></div>
                 );
             }
+        }
+        else {
+            gameLinks.push(
+                <div style={{marginTop:5}}><span className="linkSpan" onClick={(event) => this.createGame(event)}>No existing games.  Click to create a new game.</span></div>
+            );
         }
 
         return (

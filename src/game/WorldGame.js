@@ -5,7 +5,7 @@ import MenuContainer from './MenuContainer';
 import CreateGameContainer from './CreateGameContainer';
 import OpenGame from './OpenGame';
 import './WorldGame.css';
-import { openGame, syncGameCount } from "./MenuActions"
+import { openGame, syncGameCount, selectPage } from "./MenuActions"
 
 class WorldGame extends Component {
 
@@ -14,6 +14,7 @@ class WorldGame extends Component {
 
       // This binding is necessary to make `this` work in the callback
       this.openGame = this.openGame.bind(this);
+      this.selectPage = this.selectPage.bind(this);
   }
   
   componentDidMount() {
@@ -22,6 +23,10 @@ class WorldGame extends Component {
 
   openGame(gameId) {
       this.props.dispatch(openGame(gameId));
+  }
+
+  selectPage(page) {
+      this.props.dispatch(selectPage(page));
   }
   
   render() {
@@ -40,7 +45,7 @@ class WorldGame extends Component {
     return (
         <div>
             <MenuContainer />
-            {selectedPage === "open" && (<OpenGame onOpenGame={this.openGame} gameCount={gameCount} />)}
+            {selectedPage === "open" && (<OpenGame onOpenGame={this.openGame} onSelectPage={this.selectPage} gameCount={gameCount} />)}
             {selectedPage === "create" && (<CreateGameContainer />)}
             {selectedPage === "game" && (<GameContainer gameId={this.props.menu.selectedGameId} />)}
         </div>

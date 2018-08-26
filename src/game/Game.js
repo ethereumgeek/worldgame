@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { selectTile, moveOrAttack, deployAndEndTurn, hoverTile, syncGameData, showOverlay, cacheBlockHash, declareWinner } from './GameActions'
+import { selectTile, moveOrAttack, deployAndEndTurn, hoverTile, syncGameData, showOverlay, cacheBlockHash, declareWinner, findNewGameEvent } from './GameActions'
 import ArrowControl from './ArrowControl';
 import PropTypes from 'prop-types';
 import './Game.css';
@@ -24,6 +24,7 @@ class Game extends Component {
         this.getTilesFromData = this.getTilesFromData.bind(this);
         this.forceNextBlock = this.forceNextBlock.bind(this);
         this.declareWinner = this.declareWinner.bind(this);
+        this.syncAvatars = this.syncAvatars.bind(this);
 
         this.regionNames = [
             "HAWAII",
@@ -123,6 +124,13 @@ class Game extends Component {
       event.preventDefault();
       let id = event.currentTarget.id;
       this.props.dispatch(showOverlay(id));
+    }
+
+    syncAvatars(event) {
+        this.props.dispatch(findNewGameEvent(
+            this.context.drizzle, 
+            this.props.gameId
+        ));
     }
 
     moveOrAttack(event) {
@@ -668,16 +676,16 @@ class Game extends Component {
         if (actionEntry.hasOutcome) {
             if (isFriendly) {
                 outcomeClass = "outcomeWon";
-                outcomeText = currentPlayerStr + " moved " + initialAttackers + " soldiers.";
+                outcomeText = currentPlayerStr + " moved " + initialAttackers + " " + (initialAttackers === 1 ? "soldier" : "soldiers") + ".";
             }
             else {
                 if (remainingDefenders === 0) {
                     outcomeClass = "outcomeWon";
-                    outcomeText = currentPlayerStr + " won the attack!  " + currentPlayerStr + " lost " + lostAttackers + " soldiers, and killed " + lostDefenders + " soldiers.";
+                    outcomeText = currentPlayerStr + " won the attack!  " + currentPlayerStr + " lost " + lostAttackers + " " + (lostAttackers === 1 ? "soldier" : "soldiers") + ", and killed " + lostDefenders + " " + (lostDefenders === 1 ? "soldier" : "soldiers") + ".";
                 }
                 else {
                     outcomeClass = "outcomeLost";
-                    outcomeText = currentPlayerStr + " lost the attack!  " + currentPlayerStr + " lost " + lostAttackers + " soldiers, and killed " + lostDefenders + " soldiers.";
+                    outcomeText = currentPlayerStr + " lost the attack!  " + currentPlayerStr + " lost " + lostAttackers + " " + (lostAttackers === 1 ? "soldier" : "soldiers") + ", and killed " + lostDefenders + " " + (lostDefenders === 1 ? "soldier" : "soldiers") + ".";
                 }
             }
         }
@@ -688,7 +696,7 @@ class Game extends Component {
 
         renderedActions.push(
             <li key={i}>
-                {actionType} {actionEntry.soldierCount} soldiers from 
+                {actionType} {actionEntry.soldierCount} {actionEntry.soldierCount === 1 ? "soldier" : "soldiers"} from 
                 <span> "{this.regionIdToDisplay(actionEntry.fromRegion)}" </span> to 
                 <span> "{this.regionIdToDisplay(actionEntry.toRegion)}"</span>. 
                 <span className={outcomeClass}> {outcomeText}</span>
@@ -770,7 +778,7 @@ class Game extends Component {
 
         let hideQueueSummary = hasHover && (isYourTeam || isUnowned);
 
-        if (isNeighbor) {
+        if (queuedAction === null && isNeighbor) {
           if (selectedTileRegion === "HAWAII" && tile.name === "FIJI") {
             neighborCenterPosList.push({isFriendly:isFriendly, shortenDest:false, x1:selectedCenterPos.left, y1:selectedCenterPos.top, x2:0, y2:selectedCenterPos.top+20});
             neighborCenterPosList.push({isFriendly:isFriendly, shortenDest:false, x1:tile.left + Math.floor(tile.width/2), y1:tile.top + Math.floor(tile.height/2), x2:1710, y2:tile.top + Math.floor(tile.height/2)-20});
@@ -796,7 +804,7 @@ class Game extends Component {
             <div 
                 onMouseEnter={this.hoverTile} 
                 onMouseLeave={this.cancelHover} 
-                onClick={selectedTileRegion === null ? this.showOverlay : (isNeighbor ? this.moveOrAttack : this.cancelTile)} 
+                onClick={selectedTileRegion === null ? this.showOverlay : (queuedAction === null && isNeighbor ? this.moveOrAttack : this.cancelTile)} 
                 id={tile.name} 
                 key={tile.name} 
                 style={{
@@ -815,11 +823,11 @@ class Game extends Component {
                     <div style={{position:"absolute", zIndex:10, color:"#00cc00", background:"rgba(0,0,0,0.7)", textAlign:"center", width:90, padding:10, fontSize:24, top:(topPos+10), left:(leftPos-20)}}>SELECT</div> : 
                     null
                 }
-                {(isNeighbor && hasHover && isFriendly) ? 
+                {(queuedAction === null && isNeighbor && hasHover && isFriendly) ? 
                     <div style={{position:"absolute", zIndex:10, color:"#00cc00", background:"rgba(0,0,0,0.7)", textAlign:"center", width:90, padding:10, fontSize:24, top:(topPos+10), left:(leftPos-20)}}>MOVE</div> : 
                     null
                 }
-                {(isNeighbor && hasHover && !isFriendly) ? 
+                {(queuedAction === null && isNeighbor && hasHover && !isFriendly) ? 
                     <div style={{position:"absolute", zIndex:10, color:"#ff0000", background:"rgba(0,0,0,0.7)", textAlign:"center", width:90, padding:10, fontSize:24, top:(topPos+10), left:(leftPos-20)}}>ATTACK</div> : 
                     null
                 }
@@ -827,11 +835,11 @@ class Game extends Component {
                     <div style={{position:"absolute", zIndex:10, color:(queuedAction === "ATTACKING" ? "#ff0000" : "#00cc00"), background:"rgba(80,80,80,0.9)", textAlign:"center", width:90, padding:10, fontSize:16, top:(topPos+5), left:(leftPos-20)}}>{queuedAction}<div>{"+" + queuedSoldiers}</div></div> : 
                     null
                 }
-                {(isNeighbor && isFriendly) ? 
+                {(queuedAction === null && isNeighbor && isFriendly) ? 
                     <img src={"/circle_lightblue.png"} alt="" style={{width:90, height:90, position:"absolute", top:(topPos-10), left:(leftPos-10)}}/> : 
                     null
                 }
-                {(isNeighbor && !isFriendly) ? 
+                {(queuedAction === null && isNeighbor && !isFriendly) ? 
                     <img src={"/circle_red2.png"} alt="" style={{width:90, height:90, position:"absolute", top:(topPos-10), left:(leftPos-10)}}/> : 
                     null
                 }
@@ -906,7 +914,18 @@ class Game extends Component {
 
     return (
         <div>
-            {selectedOverlayId !== null && <OverlayContainer data={overlayData} gameId={gameId} turnNum={turnNum} waitingForActions={waitingForActions} waitingForBlock={waitingForBlock} actionCount={actionCount} />}
+            {
+                selectedOverlayId !== null && 
+                <OverlayContainer 
+                    data={overlayData} 
+                    gameId={gameId} 
+                    turnNum={turnNum} 
+                    playerNum={playerNum} 
+                    waitingForActions={waitingForActions} 
+                    waitingForBlock={waitingForBlock} 
+                    actionCount={actionCount} 
+                />
+            }
             <div className="menuGap"></div>
             <div style={{background:"#fafafa", width: 1710}}>
                 {initialized && (
@@ -929,11 +948,11 @@ class Game extends Component {
                                     <span style={{fontSize:20, fontWeight:"bold", color:"#dd2010"}}>{playerNum === NO_PLAYER ? "You are not playing. " : ""}{"It's player " + (turnTeamId + 1) + "'s turn. "}</span>
                                 )}
                                 {playerNum === NO_PLAYER ? (
-                                    <span>{"There are " + playerCount + " players. "}</span>
+                                    <span></span>
                                 ) : (
                                     <span>
                                         {"You are player " + (playerNum + 1) + ". "}
-                                        {"You control " + yourRegionCount + " regions and have " + yourUndeployedSoldiers + " undeployed soldiers. Interact with the map to move, attack or deploy soldiers."}
+                                        {"You control " + yourRegionCount + " regions and have " + yourUndeployedSoldiers + " undeployed " + (yourUndeployedSoldiers === 1 ? "soldier" : "soldiers") + ". Interact with the map to move, attack or deploy soldiers."}
                                     </span>
                                 )}
                                 <table style={{marginTop:20}}><tbody><tr>{renderPlayerList}</tr></tbody></table>
@@ -947,6 +966,7 @@ class Game extends Component {
                                     <div>
                                         <button onClick={(event) => this.endTurn(event, turnNum, waitingForActions, waitingForBlock)} className={waitingForActions ? "btnDisabled" : "btn"} style={{marginBottom:0}}>End your turn without deploying soldiers</button>
                                         <button onClick={(event) => this.forceNextBlock(event, blockNumber)} className="btn" style={{marginBottom:0}}>Force next block</button>
+                                        <button onClick={(event) => this.syncAvatars(event)} className="btn" style={{marginBottom:0}}>Sync Avatars</button>
                                         {waitingForActions && <div className="errorExplainer">You cannot end turn until block #{waitingForBlock}</div>}
                                     </div>
                                 )}
