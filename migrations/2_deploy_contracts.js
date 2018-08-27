@@ -1,7 +1,7 @@
 var WorldGame = artifacts.require("WorldGame");
-var NumberPlay = artifacts.require("NumberPlay");
+var LibraryDemo = artifacts.require("LibraryDemo");
 
 module.exports = function(deployer) {
   deployer.deploy(WorldGame);
-  deployer.deploy(NumberPlay);
+  deployer.deploy(LibraryDemo);
 };

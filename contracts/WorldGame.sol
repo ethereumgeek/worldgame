@@ -29,6 +29,9 @@ contract WorldGame {
     /* Reward bonus multiplier denominator  */
     uint32 constant REWARD_BONUS_MULTIPLIER_DENOM = 20;
 
+    /* Minimum value for maxBlocksPerTurn */
+    uint32 constant MAX_BLOCKS_THRESHOLD = 20;
+
     /* 32 bit mask used for helper functions */
     uint256 constant MASK_32_BITS = 0xffffffff;
 
@@ -250,6 +253,9 @@ contract WorldGame {
         stopInEmergency() 
         returns(uint256) 
     {
+        /* Ensure maxBlocksPerTurn isn't set maliciously low. */
+        require(maxBlocksPerTurn >= MAX_BLOCKS_THRESHOLD, "Users must be given enough time to complete their turn.");
+
         /* 
             Initialize a new game with some default values.
             Push returns array length so subtract 1 to get array index.
@@ -325,7 +331,7 @@ contract WorldGame {
         }
         require(game.actionCount < MAX_ACTIONS_PER_TURN, "Only 8 actions are allowed per turn");
         require(game.regionSoldiers[regionFrom] > moveSoldierCount, "Must have sufficient soldiers");
-        require(game.turnTeamId == getData8(game.regionOwners, regionFrom), "Must own territory");
+        require(game.turnTeamId == getData8(game.regionOwners, regionFrom), "Must own region moving from");
 
         /* Index to use for creating a new action */
         i = game.actionCount;
@@ -376,7 +382,11 @@ contract WorldGame {
         /* Deploy soldiers if a region is specified */
         if (regionDeploy != NO_REGION) {
             game.regionOwners = setData8(game.regionOwners, regionDeploy, game.turnTeamId);
-            game.undeployedSoldiers = setData32(game.undeployedSoldiers, game.turnTeamId, undeployedSoldierCount - deploySoldierCount);
+            game.undeployedSoldiers = setData32(
+                game.undeployedSoldiers, 
+                game.turnTeamId, 
+                subSafe(undeployedSoldierCount, deploySoldierCount)
+            );
             game.regionSoldiers[regionDeploy] = addSafe(
                 game.regionSoldiers[regionDeploy],
                 deploySoldierCount
@@ -439,7 +449,7 @@ contract WorldGame {
         }
 
         require(isWinner, "We don't have a winner.");
-        
+
         if (isWinner) {
             emit Winner(gameId, teamId);
         }

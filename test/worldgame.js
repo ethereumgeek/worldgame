@@ -330,9 +330,10 @@ async function queueNewPendingAction(
 ) {
     if (debugLog) console.log("Player " + playerNum + " moving " + soldierCount + " soldiers from " + REGION_NAMES[regionFrom] + " to " + REGION_NAMES[regionTo] + ".");
 
+    let gasUsedForAction = 0;
     /* Queue new pending action and assert if there's a problem. */
     try {
-        await worldGameInstance.attackOrMove(
+        let tx = await worldGameInstance.attackOrMove(
             gameId, 
             turnNum, 
             regionFrom, 
@@ -340,6 +341,8 @@ async function queueNewPendingAction(
             soldierCount,
             {from: accounts[playerNum]}
         );
+
+        gasUsedForAction = tx.receipt.gasUsed;
     }
     catch (e) {
         assert.equal(false, true, "Unable to add pending action");
@@ -360,7 +363,7 @@ async function queueNewPendingAction(
     }
 
     /* Return information on current queued pending actions. */
-    return { actionCount, fromRegionList, toRegionList, moveSoldierCountList, submitBlockList };
+    return { gasUsedForAction, actionCount, fromRegionList, toRegionList, moveSoldierCountList, submitBlockList };
 }
 
 /* Initialize a simple game by deploying soldiers to one region per player. */
@@ -949,9 +952,9 @@ contract('WorldGame', function(accounts) {
 
                 /* Will assert if we don't actually have a winner. */
                 await worldGameInstance.declareWinner(
-                  gameId,
-                  nextTeamId,
-                  {from: accounts[0]}
+                    gameId,
+                    nextTeamId,
+                    {from: accounts[0]}
                 );
 
                 /* Game is over! */
@@ -987,6 +990,7 @@ contract('WorldGame', function(accounts) {
 
                 if (checkRegionSoliders[fromRegionId] > 0) {
                     let { 
+                        gasUsedForAction, 
                         actionCount, 
                         fromRegionList, 
                         toRegionList
@@ -1001,6 +1005,8 @@ contract('WorldGame', function(accounts) {
                         checkRegionSoliders[fromRegionId] - 1,
                         debugLog
                     );
+
+                    gasTotal += gasUsedForAction;
 
                     checkActionCount = actionCount;
                     checkFromRegionList = fromRegionList;
