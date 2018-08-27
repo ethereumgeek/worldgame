@@ -738,7 +738,8 @@ class Game extends Component {
             waitingForBlock = Math.max(waitingForBlock, actionEntry.outcomeBlock);
         }
         
-        let finishTurnBlock = actionEntry.outcomeBlock + 99;
+        const BLOCKHASHES_EXPIRE_BLOCKS = 256;
+        let finishTurnBlock = actionEntry.outcomeBlock + (BLOCKHASHES_EXPIRE_BLOCKS - 1);
         endTurnByBlock = (endTurnByBlock === null) ? finishTurnBlock : Math.min(endTurnByBlock, finishTurnBlock);
 
         renderedActions.push(

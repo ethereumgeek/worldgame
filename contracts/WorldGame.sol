@@ -438,6 +438,8 @@ contract WorldGame {
             }
         }
 
+        require(isWinner, "We don't have a winner.");
+        
         if (isWinner) {
             emit Winner(gameId, teamId);
         }
