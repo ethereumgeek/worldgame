@@ -1,6 +1,7 @@
 pragma solidity ^0.4.0;
 import "openzeppelin-solidity/contracts/math/Math.sol";
 
+/** @title Library demo using Math from openzeppelin. */
 contract LibraryDemo {
 
     /* Current value. */

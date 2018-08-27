@@ -53,6 +53,21 @@ class OpenGame extends Component {
 
     render() {
 
+        let yourGameLinks = [];
+        if (this.props.gamesForAddressList && this.props.gamesForAddressList.length > 0) {
+            for (let i = 0; i < this.props.gamesForAddressList.length; i++) {
+                let gameId = parseInt(this.props.gamesForAddressList[i], 10);
+                yourGameLinks.push(
+                    <div key={i} style={{marginTop:5}}><span className="linkSpan" onClick={(event) => this.openGameById(event, gameId)}>Game #{gameId}</span></div>
+                );
+            }
+        }
+        else {
+            yourGameLinks.push(
+                <div key="create" style={{marginTop:5}}><span className="linkSpan" onClick={(event) => this.createGame(event)}>No recent games.  Click to create a new game.</span></div>
+            );
+        }
+
         let gameLinks = [];
         if (this.props.gameCount > 0) {
             for (let i = this.props.gameCount - 1; i >= 0 && i + 10 > this.props.gameCount; i--) {
@@ -71,8 +86,12 @@ class OpenGame extends Component {
             <div>
                 <div className="menuGap"></div>
                 <div className="inputContainer">
-                    <div className="groupTitle">Open existing game</div>
+                    <div className="groupTitle">Your recent games</div>
+                    {yourGameLinks}
+
+                    <div className="groupTitle titleMargin">All recently created game</div>
                     {gameLinks}
+                    <div className="groupTitle titleMargin">Load a game by id</div>
                     <input disabled={false} autoComplete="off" placeholder={"Game id"} type="text" className="inputBox" name="gameid" value={this.state.inputGameId} onChange={this.handleInputChange} />
                     {this.state.invalid && (<div className="errorMsg">Invalid game id</div>)}
                     <button onClick={this.openGame} className="btn">Open game</button>

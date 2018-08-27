@@ -5,7 +5,7 @@ import MenuContainer from './MenuContainer';
 import CreateGameContainer from './CreateGameContainer';
 import OpenGame from './OpenGame';
 import './WorldGame.css';
-import { openGame, syncGameCount, selectPage } from "./MenuActions"
+import { openGame, syncGameCount, syncGamesForAddress, selectPage } from "./MenuActions"
 
 class WorldGame extends Component {
 
@@ -19,6 +19,7 @@ class WorldGame extends Component {
   
   componentDidMount() {
       this.props.dispatch(syncGameCount(this.context.drizzle));
+      this.props.dispatch(syncGamesForAddress(this.context.drizzle));
   }
 
   openGame(gameId) {
@@ -32,20 +33,31 @@ class WorldGame extends Component {
   render() {
     let selectedPage = this.props.menu.selectedPage;
     let gameCountKey = this.props.menu.gameCountKey;
+    let gamesForAddressKey = this.props.menu.gamesForAddressKey;
     let gameCount = 0;
+    let gamesForAddressList = [];
+    let gamesForAddressCount = [];
 
     if (
         gameCountKey !== null && 
         this.props.WorldGame.initialized && 
-        this.props.WorldGame.numberOfGames.hasOwnProperty(gameCountKey)
+        this.props.WorldGame.numberOfGames.hasOwnProperty(gameCountKey) && 
+        this.props.WorldGame.listGamesForAddress.hasOwnProperty(gamesForAddressKey)
     ) {
         gameCount = this.props.WorldGame.numberOfGames[gameCountKey].value;
+        let gamesForAddressResp = this.props.WorldGame.listGamesForAddress[gamesForAddressKey].value;
+        gamesForAddressList = gamesForAddressResp[0];
+        gamesForAddressCount = parseInt(gamesForAddressResp[1], 10);
+        gamesForAddressList = gamesForAddressList.slice(0, gamesForAddressCount);
     }
+
+    console.log("gamesForAddressList");
+    console.log(gamesForAddressList);
 
     return (
         <div>
             <MenuContainer />
-            {selectedPage === "open" && (<OpenGame onOpenGame={this.openGame} onSelectPage={this.selectPage} gameCount={gameCount} />)}
+            {selectedPage === "open" && (<OpenGame onOpenGame={this.openGame} onSelectPage={this.selectPage} gameCount={gameCount} gamesForAddressList={gamesForAddressList} />)}
             {selectedPage === "create" && (<CreateGameContainer />)}
             {selectedPage === "game" && (<GameContainer gameId={this.props.menu.selectedGameId} />)}
         </div>

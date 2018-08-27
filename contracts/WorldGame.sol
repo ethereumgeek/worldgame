@@ -1,5 +1,6 @@
 pragma solidity ^0.4.0;
 
+/** @title World game. Battle to control territory and take over the world. */
 contract WorldGame {
 
     /* Constant to indicate that a region has no owner */
@@ -485,6 +486,49 @@ contract WorldGame {
     /// @notice Returns total number of games that have been created.
     function numberOfGames() public view returns(uint256) {
         return gameDataArray.length;
+    }
+
+    /// @notice Returns recent game ids where msg.sender is a player.
+    /// @param offset Position in game data array to start search from
+    /// @return List of game ids
+    /// @return Number of game ids
+    /// @return Position in loop when ended
+    function listGamesForAddress(uint256 offset) 
+        public 
+        view 
+        returns(uint256[10], uint32, uint256) 
+    {
+        uint256[10] memory gameIdList;
+        uint32 gameIdCount;
+        uint256 gameId;
+        if (gameDataArray.length > 0) {
+
+            /* Start position to search backwards through gameDataArray */
+            uint256 startPosition = gameDataArray.length - 1;
+            if (offset > 0 && offset < startPosition) {
+                startPosition = offset;
+            }
+
+            /* Add one to "i" to prevent underflow.  Then sub one from "i" to get gameId. */
+            for (uint256 i = startPosition + 1; i > 0; i--) {
+                gameId = i - 1;
+
+                GameData storage game = gameDataArray[gameId];
+                for (uint32 j = 0; j < game.playerCount; j++) {
+                    if (game.playerAddresses[j] == msg.sender) {
+                        gameIdList[gameIdCount] = gameId;
+                        gameIdCount++;
+                        break;
+                    }
+                }
+
+                if (gameIdCount == 10 || gasleft() < 100000) {
+                    break;
+                }
+            }
+        }
+
+        return (gameIdList, gameIdCount, gameId);
     }
 
     /// @notice Returns the number of soldiers deployed to each region and region owners.

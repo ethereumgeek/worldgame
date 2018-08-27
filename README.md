@@ -1,8 +1,12 @@
 # Ethereum World Game
 Battle on the Ethereum blockchain to control territory and take over the world.  Deploy soldiers to regions and attack your neighbors to conquer more territory.  Gain points by holding regions.  Use points to deploy more soldiers to the map and build out your army.
 
-## Understanding How It Works
+## Description (What It Does)
 
+## User Stories
+Some user stories for the World Game Dapp
+* A player opens the web app. The contract recognizes their address and show any recent games that the address has participated in.  The can click on a game to see the game details.
+* 
 
 ## How To Set It Up To Run Locally
 

@@ -1,7 +1,8 @@
 const initialState = {
     selectedPage: "open",
     selectedGameId: null,
-    gameCountKey: null
+    gameCountKey: null,
+    gamesForAddressKey: null
 }
 
 const MenuReducer = (state = initialState, action) => {
@@ -31,6 +32,15 @@ const MenuReducer = (state = initialState, action) => {
 
         return Object.assign({}, state, {
             gameCountKey: newValue
+        });
+    }
+
+    if (action.type === 'SET_GAMES_FOR_ADDRESS')
+    {
+        let newValue = action.payload;
+
+        return Object.assign({}, state, {
+            gamesForAddressKey: newValue
         });
     }
 

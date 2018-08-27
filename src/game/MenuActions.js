@@ -27,3 +27,15 @@ export function syncGameCount(drizzle) {
     });
   }
 }
+
+export function syncGamesForAddress(drizzle) {
+  return function(dispatch) {
+
+    let dataKey = drizzle.contracts.WorldGame.methods.listGamesForAddress.cacheCall(0);
+    
+    dispatch({
+      type: 'SET_GAMES_FOR_ADDRESS',
+      payload: dataKey
+    });
+  }
+}
