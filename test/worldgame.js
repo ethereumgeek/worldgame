@@ -89,7 +89,7 @@ function getRegionNeighbors() {
 const REGION_NEIGHBORS = getRegionNeighbors();
 const REGION_REWARDS = [3, 6, 5, 11, 8, 3, 3, 4, 2, 2, 10, 6, 4, 3, 3, 4, 3, 5, 7, 10, 5, 4, 6, 4, 2];
 const MAX_BLOCKS_PER_TURN = 256;
-const TEAM_AVATARS = ["E", "M", "", "", "", "", "", ""].join("");
+const TEAM_AVATARS = ["a", "b", "c", "d", "e", "f", "g", "h"].join("");
 const NO_ACCOUNT = "0x0000000000000000000000000000000000000000";
 
 
@@ -222,9 +222,10 @@ async function deployAndCheckCounts(
     checkActionCount, 
     checkFromRegionList, 
     checkToRegionList, 
-    checkMoveSoldierCountList
+    checkMoveSoldierCountList,
+    debugLog
 ) {
-    console.log("Player " + playerNum + " deploying " + deployCount + " soldiers to " + REGION_NAMES[deployRegion] + ".");
+    if (debugLog) console.log("Player " + playerNum + " deploying " + deployCount + " soldiers to " + REGION_NAMES[deployRegion] + ".");
 
     let tx = await worldGameInstance.deploySoldiersAndEndTurn(
         gameId, 
@@ -259,7 +260,7 @@ async function deployAndCheckCounts(
         if (checkRegionOwners[i] !== regionOwner) {
             if (hasValueInList(checkToRegionList, checkActionCount, i)) {
                 ownersChanged = true;
-                console.log("Action caused " + REGION_NAMES[i] + " to changed owners.");
+                if (debugLog) console.log("Action caused " + REGION_NAMES[i] + " to changed owners.");
             }
             else {
                 assert.equal(checkRegionOwners[i], regionOwner, REGION_NAMES[i] + " region owner doesn't match");
@@ -267,7 +268,7 @@ async function deployAndCheckCounts(
         }
         if (checkRegionSoliders[i] !== regionSoldiers) {
             if (hasValueInList(checkFromRegionList, checkActionCount, i) || hasValueInList(checkToRegionList, checkActionCount, i)) {
-                console.log("Action caused " + REGION_NAMES[i] + " to changed soldier counts from " + checkRegionSoliders[i] + " to " + regionSoldiers + ".");
+                if (debugLog) console.log("Action caused " + REGION_NAMES[i] + " to changed soldier counts from " + checkRegionSoliders[i] + " to " + regionSoldiers + ".");
             }
             else {
                 assert.equal(checkRegionSoliders[i], regionSoldiers, REGION_NAMES[i] + " soldier count doesn't match");
@@ -285,7 +286,7 @@ async function deployAndCheckCounts(
                 assert.equal(checkUndeployedSoldiers[i], undeployedSoldiers, "Player " + i + " undeployed soldiers doesn't match");
             }
             else {
-                console.log("Action caused Player " + i + "'s bonus to change.");
+                if (debugLog) console.log("Action caused Player " + i + "'s bonus to change.");
             }
         }
     }
@@ -301,9 +302,10 @@ async function addPendingAction(
     playerNum, 
     regionFrom, 
     regionTo,
-    soldierCount
+    soldierCount,
+    debugLog
 ) {
-    console.log("Player " + playerNum + " moving " + soldierCount + " soldiers from " + REGION_NAMES[regionFrom] + " to " + REGION_NAMES[regionTo] + ".");
+    if (debugLog) console.log("Player " + playerNum + " moving " + soldierCount + " soldiers from " + REGION_NAMES[regionFrom] + " to " + REGION_NAMES[regionTo] + ".");
 
     try {
         let tx = await worldGameInstance.attackOrMove(
@@ -337,13 +339,14 @@ async function addPendingAction(
 
 contract('WorldGame', function(accounts) {
 
-    it("Run game simulation", async function() {
-        //try {
-            let gasTotal = 0;
-            let playerNum = 0;
+    it("Test circuit breaker", async function() {
 
-            let worldGameInstance = await WorldGame.deployed();
-            let tx = await worldGameInstance.newGame(
+        let worldGameInstance = await WorldGame.deployed();
+
+        /* Before circuit breaker we should be able to create a new game.  */
+        let hasAssert = false;
+        try {
+            await worldGameInstance.newGame(
                 PLAYER_COUNT, 
                 MAX_BLOCKS_PER_TURN, 
                 [
@@ -356,150 +359,217 @@ contract('WorldGame', function(accounts) {
                     NO_ACCOUNT, 
                     NO_ACCOUNT
                 ], 
-                web3.utils.asciiToHex(TEAM_AVATARS),
+                web3.utils.asciiToHex(TEAM_AVATARS.substring(0, PLAYER_COUNT)),
                 {from: accounts[0]}
             );
+        }
+        catch (e) {
+            hasAssert = true;
+        }
+
+        assert.equal(hasAssert, false, "Should be able to create game before circuit breaker.");
+        
+        /* After circuit breaker we should not be able to create new games.  */
+        await worldGameInstance.stopNewGames(true,
+            {from: accounts[0]}
+        );
+
+        hasAssert = false;
+        try {
+            await worldGameInstance.newGame(
+                PLAYER_COUNT, 
+                MAX_BLOCKS_PER_TURN, 
+                [
+                    accounts[0], 
+                    accounts[1], 
+                    NO_ACCOUNT, 
+                    NO_ACCOUNT, 
+                    NO_ACCOUNT, 
+                    NO_ACCOUNT, 
+                    NO_ACCOUNT, 
+                    NO_ACCOUNT
+                ], 
+                web3.utils.asciiToHex(TEAM_AVATARS.substring(0, PLAYER_COUNT)),
+                {from: accounts[0]}
+            );
+        }
+        catch (e) {
+            hasAssert = true;
+        }
+
+        assert.equal(hasAssert, true, "Circuit breaker failed to work.");        
+
+        /* Disable circuit breaker to not interfere with following test. */
+        await worldGameInstance.stopNewGames(false,
+            {from: accounts[0]}
+        );
+    });
+
+    it("Test something else", async function() {
+        let val = true;
+        assert.equal(val, true, "Unable to add pending action");
+    });
+
+    it("Full game simulation until winner", async function() {
+
+        /* Set debugLog to true for detailed logging. */
+        let debugLog = false;
+        let gasTotal = 0;
+        let playerNum = 0;
+
+        let worldGameInstance = await WorldGame.deployed();
+        let tx = await worldGameInstance.newGame(
+            PLAYER_COUNT, 
+            MAX_BLOCKS_PER_TURN, 
+            [
+                accounts[0], 
+                accounts[1], 
+                NO_ACCOUNT, 
+                NO_ACCOUNT, 
+                NO_ACCOUNT, 
+                NO_ACCOUNT, 
+                NO_ACCOUNT, 
+                NO_ACCOUNT
+            ], 
+            web3.utils.asciiToHex(TEAM_AVATARS.substring(0, PLAYER_COUNT)),
+            {from: accounts[0]}
+        );
+        
+        let gameId = "";
+        let turnNum = ""; 
+        let teamAvatars = ""; 
+        let args = getEventFromTransaction(tx, "NewGame");
+        if (args) {
+            gameId = args.gameId.toString();
+            turnNum = args.turnNum.toString();
+            teamAvatars = web3.utils.hexToAscii(args.teamAvatars);
+            gasTotal += tx.receipt.gasUsed;
+
+            if (debugLog) console.log("New game created with gameId " + gameId);
+            if (debugLog) console.log("Avatar list " + teamAvatars.match(/.{1,2}/g).join(","));
+        }
+
+        let checkActionCount = 0;
+        let checkFromRegionList = [];
+        let checkToRegionList = [];
+        let checkMoveSoldierCountList = [];
+        let checkRegionOwners = [];
+        let checkRegionSoliders = [];
+        let checkUndeployedSoldiers = [];
+
+        for (let i = 0; i < REGION_COUNT; i++) {
+            checkRegionOwners.push(NOT_OWNED);
+            checkRegionSoliders.push(0);
+        }
+
+        for (let i = 0; i < PLAYER_COUNT; i++) {
+            checkUndeployedSoldiers.push(20);
+        }
+
+        for (let loop = 0; loop < 1000; loop++) {
+            let deployRegion = chooseRegionToDeploy(checkRegionOwners, playerNum, loop);
+            let deployCount = Math.floor(checkUndeployedSoldiers[playerNum] / 2);
+            if (deployRegion === NO_REGION) {
+                deployCount = 0;
+            }
             
-            let gameId = "";
-            let turnNum = ""; 
-            let teamAvatars = ""; 
-            let args = getEventFromTransaction(tx, "NewGame");
-            if (args) {
-                gameId = args.gameId.toString();
-                turnNum = args.turnNum.toString();
-                teamAvatars = web3.utils.hexToAscii(args.teamAvatars);
-                gasTotal += tx.receipt.gasUsed;
-                console.log("New game created with gameId " + gameId);
-                console.log("Avatar list " + teamAvatars.match(/.{1,2}/g).join(","));
-            }
+            checkRegionOwners[deployRegion] = playerNum;
+            checkRegionSoliders[deployRegion] += deployCount;
+            checkUndeployedSoldiers[playerNum] -= deployCount;
 
-            let checkActionCount = 0;
-            let checkFromRegionList = [];
-            let checkToRegionList = [];
-            let checkMoveSoldierCountList = [];
-            let checkRegionOwners = [];
-            let checkRegionSoliders = [];
-            let checkUndeployedSoldiers = [];
+            let { 
+                gasUsed, 
+                nextTurnNum, 
+                nextTeamId, 
+                regionOwnersArr, 
+                regionSoldiersArr, 
+                undeployedSoldiersArr 
+            } = await deployAndCheckCounts(
+                accounts, 
+                worldGameInstance, 
+                gameId, 
+                turnNum, 
+                playerNum, 
+                deployRegion, 
+                deployCount, 
+                checkRegionOwners, 
+                checkRegionSoliders, 
+                checkUndeployedSoldiers, 
+                checkActionCount, 
+                checkFromRegionList, 
+                checkToRegionList, 
+                checkMoveSoldierCountList,
+                debugLog
+            );
 
-            for (let i = 0; i < REGION_COUNT; i++) {
-                checkRegionOwners.push(NOT_OWNED);
-                checkRegionSoliders.push(0);
-            }
-
-            for (let i = 0; i < PLAYER_COUNT; i++) {
-                checkUndeployedSoldiers.push(20);
-            }
-
-            for (let loop = 0; loop < 1000; loop++) {
-                let deployRegion = chooseRegionToDeploy(checkRegionOwners, playerNum, loop);
-                let deployCount = Math.floor(checkUndeployedSoldiers[playerNum] / 2);
-                if (deployRegion === NO_REGION) {
-                    deployCount = 0;
-                }
-                
-                checkRegionOwners[deployRegion] = playerNum;
-                checkRegionSoliders[deployRegion] += deployCount;
-                checkUndeployedSoldiers[playerNum] -= deployCount;
-
-                let { 
-                    gasUsed, 
-                    nextTurnNum, 
-                    nextTeamId, 
-                    regionOwnersArr, 
-                    regionSoldiersArr, 
-                    undeployedSoldiersArr 
-                } = await deployAndCheckCounts(
-                    accounts, 
-                    worldGameInstance, 
-                    gameId, 
-                    turnNum, 
-                    playerNum, 
-                    deployRegion, 
-                    deployCount, 
-                    checkRegionOwners, 
-                    checkRegionSoliders, 
-                    checkUndeployedSoldiers, 
-                    checkActionCount, 
-                    checkFromRegionList, 
-                    checkToRegionList, 
-                    checkMoveSoldierCountList
+            /* If next player is current player then we have a winner */
+            if (playerNum == nextTeamId) {
+                await worldGameInstance.declareWinner(
+                  gameId,
+                  nextTeamId,
+                  {from: accounts[0]}
                 );
 
-                /* If next player is current player then we have a winner */
-                if (playerNum == nextTeamId) {
-                    await worldGameInstance.declareWinner(
-                      gameId,
-                      nextTeamId,
-                      {from: accounts[0]}
+                if (debugLog) console.log("Winner is player " + playerNum + "!!!");
+
+                break;
+            }
+
+            checkRegionOwners = regionOwnersArr;
+            checkRegionSoliders = regionSoldiersArr;
+            checkUndeployedSoldiers = undeployedSoldiersArr;
+            turnNum = nextTurnNum;
+            playerNum = nextTeamId;
+            gasTotal += gasUsed;
+
+            let { fromList, toList } = choosePendingActions(checkRegionOwners, checkRegionSoliders, playerNum, loop);
+
+            checkActionCount = 0;
+            checkFromRegionList = [];
+            checkToRegionList = [];
+            checkMoveSoldierCountList = [];
+            let expectedActions = 0;
+            for (let i = 0; i < fromList.length; i++) {
+
+                let fromRegionId = fromList[i];
+                let toRegionId = toList[i];
+
+                if (checkRegionSoliders[fromRegionId] > 0) {
+                    let { actionCount, fromRegionList, toRegionList, moveSoldierCountList } = await addPendingAction(
+                        accounts, 
+                        worldGameInstance, 
+                        gameId, 
+                        turnNum, 
+                        playerNum, 
+                        fromRegionId, 
+                        toRegionId,
+                        checkRegionSoliders[fromRegionId] - 1,
+                        debugLog
                     );
 
-                    console.log("Winner is player " + playerNum + "!!!");
+                    checkActionCount = actionCount;
+                    checkFromRegionList = fromRegionList;
+                    checkToRegionList = toRegionList;
+                    checkMoveSoldierCountList = moveSoldierCountList;                        
 
-                    break;
+                    expectedActions++;
                 }
-
-                checkRegionOwners = regionOwnersArr;
-                checkRegionSoliders = regionSoldiersArr;
-                checkUndeployedSoldiers = undeployedSoldiersArr;
-                turnNum = nextTurnNum;
-                playerNum = nextTeamId;
-                gasTotal += gasUsed;
-
-                let { fromList, toList } = choosePendingActions(checkRegionOwners, checkRegionSoliders, playerNum, loop);
-
-                checkActionCount = 0;
-                checkFromRegionList = [];
-                checkToRegionList = [];
-                checkMoveSoldierCountList = [];
-                let expectedActions = 0;
-                for (let i = 0; i < fromList.length; i++) {
-
-                    let fromRegionId = fromList[i];
-                    let toRegionId = toList[i];
-
-                    if (checkRegionSoliders[fromRegionId] > 0) {
-                        let { actionCount, fromRegionList, toRegionList, moveSoldierCountList } = await addPendingAction(
-                            accounts, 
-                            worldGameInstance, 
-                            gameId, 
-                            turnNum, 
-                            playerNum, 
-                            fromRegionId, 
-                            toRegionId,
-                            checkRegionSoliders[fromRegionId] - 1
-                        );
-
-                        checkActionCount = actionCount;
-                        checkFromRegionList = fromRegionList;
-                        checkToRegionList = toRegionList;
-                        checkMoveSoldierCountList = moveSoldierCountList;                        
-
-                        expectedActions++;
-                    }
-                }
-
-                /* Adds an additional 1 block delay */
-                await worldGameInstance.cacheBlockHash32(
-                    "0",
-                    {from: accounts[0]}
-                );
-
-                assert.equal(checkActionCount, expectedActions, 'Expected ' + expectedActions + ' actions should be queued.');
-                
-                if (loop % 10 === 0) {
-                    printSummary(checkRegionOwners, checkRegionSoliders);
-                }
-                
-
-
             }
+
+            /* Adds an additional 1 block delay */
+            await worldGameInstance.cacheBlockHash32(
+                "0",
+                {from: accounts[0]}
+            );
+
+            assert.equal(checkActionCount, expectedActions, 'Expected ' + expectedActions + ' actions should be queued.');
             
-            console.log("Total gas used during simulation was " + gasTotal);
-        //}
-        //catch (exception) {
-        //    console.log("Caught exception. Require likely failed: " + exception);
-        //    assert.equal(true, false, "Test generated an exception.");
-        //}
+            if (loop % 10 === 0 && debugLog) {
+                printSummary(checkRegionOwners, checkRegionSoliders);
+            }
+        }
+        
+        if (debugLog) console.log("Total gas used during simulation was " + gasTotal);
     });
 
     
