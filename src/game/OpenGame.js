@@ -89,7 +89,7 @@ class OpenGame extends Component {
                     <div className="groupTitle">Your recent games</div>
                     {yourGameLinks}
 
-                    <div className="groupTitle titleMargin">All recently created game</div>
+                    <div className="groupTitle titleMargin">All recently created games</div>
                     {gameLinks}
                     <div className="groupTitle titleMargin">Load a game by id</div>
                     <input disabled={false} autoComplete="off" placeholder={"Game id"} type="text" className="inputBox" name="gameid" value={this.state.inputGameId} onChange={this.handleInputChange} />
