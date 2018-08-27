@@ -27,14 +27,13 @@ Once a player controls all regions of the world they are declared the winner.
 ## How To Set It Up To Run Locally
 In order to run the UX locally type 
 ```
-cd ~/worldgame
-gnome-terminal -e "ganache-cli -d -b 3"
+cd ~/Documents/project
 npm run start
 ```
 
 In order to run tests type
 ```
-cd ~/worldgame
+cd ~/Documents/project
 truffle test
 ```
 
