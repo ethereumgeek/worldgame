@@ -60,7 +60,7 @@ Testing was focused on around security and restrict access issues.  In addition,
 * **Cannot move more soldiers than you have.**  This tests that a player can move soldiers that they have, but cannot move more soldiers than they have.  For example if a player has 20 soldiers in a region then they can move 19 soldiers, but cannot move 21 soldiers.
 * **Full game simulation until winner.**  This goes through a full game play simulation (starting with 3 players) where players deploy soldiers, move to take adjacent territory and aggressively attack opponents.  It checks that soldier counts and region owners are as expected and there are no assertions during game play.  A player is declared the winner once they control all regions of the world.  It also has a debug mode that provides detailed output during the similation.
 
-A single test is also included the the LibraryDemo contract to show functionality.
+A single test is also included the the LibraryDemo contract to show its functionality.
 
 ## Design Patterns
 See design_pattern_decisions.md for information on design pattern decisions.
