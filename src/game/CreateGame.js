@@ -109,7 +109,7 @@ class CreateGame extends Component {
           playerAddressInputs.push(
               <div key={i} >
                   <input disabled={false} autoComplete="off" placeholder={"Player " + i} type="text" className={"inputBox" + (notValid ? " notValid" : "")} name={"player" + i} value={playerVal} onChange={this.handleInputChange} />
-                  <div onClick={(event) => this.swapAvatar(event, i-1)} style={{width:70, height:70, marginTop:5, textAlign:"center", background:(notValid ? "#fdd" : "")}}>
+                  <div onClick={(event) => this.swapAvatar(event, i-1)} style={{cursor:"pointer", width:70, height:70, marginTop:5, textAlign:"center", background:(notValid ? "#fdd" : "")}}>
                       <img src={"/" + this.getAvatarFromTeamId(i-1) + ".png"} alt="" style={{maxWidth:70, maxHeight:70}}/>
                   </div>
               </div>
