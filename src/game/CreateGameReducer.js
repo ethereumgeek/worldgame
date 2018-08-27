@@ -64,6 +64,13 @@ const CreateGameReducer = (state = initialState, action) => {
       });
   }
 
+  if (action.type === 'SELECT_PAGE')
+  {
+      return Object.assign({}, state, {
+          pendingNewGame: false
+      });
+  }
+
   if (action.type === 'SWAP_AVATAR')
   {
       const AVATAR_COUNT = 22;

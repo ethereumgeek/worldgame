@@ -1,9 +1,28 @@
 # Ethereum World Game
 Battle on the Ethereum blockchain to control territory and take over the world.  Deploy soldiers to regions and attack your neighbors to conquer more territory.  Gain points by holding regions.  Use points to deploy more soldiers to the map and build out your army.
 
-## Description (What It Does)
+View it by visiting https://ethworld.app in a Metamask enabled browser using Rinkeby test network.
 
-You can view it on Rinkeby by visiting https://ethworld.app
+## Description (What It Does)
+World Game is a dapp built on Ethereum where players compete to control territory and take over the world.
+
+Players start on the "Open Game" page which shows their most recent games.  They can open an existing game, or start a new game by selecting "Create New Game" in the menu:
+* Specify Ethereum addresses for up to 8 players
+* Specify an avatar for each player which is what players look like in the game
+
+Each player starts with 20 undeployed soldiers.  They can accumulate additional undeployed soldiers by controlling territory.  Each region (AKA territory) is worth a certain # of points which is the # of new soldiers you get per turn for owning it.  Additionally, a 5% extra point bonus is given for each region owned beyond 1.
+
+The game is turned based. The following happens in order on a player's turn:
+1. They are given new undeployed soldiers based on what regions they control.  This is explained above. 
+2. They can move soldiers from regions they control to neighboring regions.  Moves are queued and executed when their turn ends:
+   * When neighboring region is friendly or unoccupied soldiers move uncontested.
+   * When neighboring region is hostile then an attack occurs.  Outcome of attack is determined based on randomness.
+3. Deploy soldiers to a region that is friendly or unoccupied.
+4. Turn ends.
+
+If a player no longer controls any regions at the start of their turn and there's no open territory then they lose.  Their turn is automatically skipped.
+
+Once a player controls all regions of the world they are declared the winner.
 
 ## User Stories
 Some user stories for the World Game Dapp
@@ -21,13 +40,13 @@ Once a player controls all regions of the world they are declared the winner.
 ## How To Set It Up To Run Locally
 In order to run the UX locally type 
 ```
-cd ~/worldgame
+cd ~/Documents/project
 npm run start
 ```
 
 In order to run tests type
 ```
-cd ~/worldgame
+cd ~/Documents/project
 truffle test
 ```
 
