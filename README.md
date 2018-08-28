@@ -27,7 +27,7 @@ Once a player controls all regions of the world they are declared the winner.
 ## How To Set It Up To Run Locally (with Virtual Box)
 Download virtual box here: https://github.com/ethereumgeek/worldgame/blob/master/WorldGameVirtualBox.ova
 
-Password to unlock the virtual box is "password".  This is also the password for metamask.
+Login to account "justin" using password "password".  The password for metamask is also "password".
 
 In order to run the UX locally type 
 ```
