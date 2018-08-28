@@ -34,10 +34,11 @@ Steps have also been taken to minimize overall gas usage.  This is to reduce cos
 
 ## Forcibly Sending Ether to a Contract
 A payable fallback function is included to prevent forcibly sending ether to the WorldGame contract.
-
+```
 function() public payable {
     revert("Invalid call to game contract.");
 }
+```
 
 ## Halting Game Play by Malicious Players
 In order to prevent a malicious player from halting the game (E.g. if they started losing) there is a parameter called maxBlocksPerTurn that allows a player's turn to be skipped if they take too long.  This must be at least 20 blocks (~5 minutes) to give users enough time to complete their turn.
