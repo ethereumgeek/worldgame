@@ -32,7 +32,7 @@ gnome-terminal -e "ganache-cli -d -b 3"
 npm run start
 ```
 
-In order to run tests type
+In order to run tests type (it may take several minutes)
 ```
 cd ~/worldgame
 gnome-terminal -e "ganache-cli -d -b 3"
