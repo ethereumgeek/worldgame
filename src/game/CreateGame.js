@@ -89,7 +89,7 @@ class CreateGame extends Component {
     }
 
     getAvatarFromTeamId(teamId) {
-        const AVATAR_STRINGS = ["unicorn", "moose", "eagle", "grizzly", "penguin", "elephant", "panda", "lion", "zebra", "owl", "chicken", "triceratops", "crocodile", "spider", "monkey", "mouse", "dog", "cat", "beaver", "monster", "llama", "pig"];
+        const AVATAR_STRINGS = ["unicorn", "moose", "eagle", "grizzly", "penguin", "elephant", "panda", "lion", "zebra", "owl", "chicken", "triceratops", "crocodile", "spider", "monkey", "mouse", "dog", "cat", "beaver", "monster", "llama", "pig", "dragon", "owl_guitar", "alien", "dino", "rawr", "penguin_jacket", "snail", "polar_bear", "bird", "bird_red", "horse", "monster_pink", "gnu", "koala", "wolf"];
         const avatarId = this.props.createGame.avatar[teamId];
         return AVATAR_STRINGS[avatarId];
     }

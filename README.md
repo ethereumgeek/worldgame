@@ -25,7 +25,7 @@ If a player no longer controls any regions at the start of their turn and there'
 Once a player controls all regions of the world they are declared the winner.
 
 ## How To Set It Up To Run Locally (with Virtual Box)
-Download virtual box here: https://github.com/ethereumgeek/worldgame/blob/master/WorldGameVirtualBox.ova
+Download virtual box here: https://drive.google.com/file/d/10-2O7PCceVBOT2nTq1PRl3pgfsPGZ5Vu/view?usp=sharing
 
 Login to account **"justin"** using password **"password"**.  The password for metamask is also "password".
 
@@ -54,6 +54,7 @@ cd worldgame
 npm install
 npm uninstall -g truffle
 npm install -g truffle@beta
+npm install -g ganache-cli
 gnome-terminal -e "ganache-cli -d -b 3"
 truffle migrate --reset
 npm run start
@@ -66,6 +67,7 @@ cd worldgame
 npm install
 npm uninstall -g truffle
 npm install -g truffle@beta
+npm install -g ganache-cli
 chmod +x run_ganache.command
 open run_ganache.command
 truffle migrate --reset

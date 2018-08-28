@@ -73,7 +73,7 @@ const CreateGameReducer = (state = initialState, action) => {
 
   if (action.type === 'SWAP_AVATAR')
   {
-      const AVATAR_COUNT = 22;
+      const AVATAR_COUNT = 37;
       let index = action.payload;
       let newValue = (state.avatar[index] + 1) % AVATAR_COUNT;
       let newAvatarArray = Object.assign([], [...state.avatar], {[index]: newValue});

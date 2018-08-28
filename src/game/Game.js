@@ -218,7 +218,7 @@ class Game extends Component {
 
     getAvatarFromTeamId(avatarIds, teamId) {
 
-        const AVATAR_STRINGS = ["unicorn", "moose", "eagle", "grizzly", "penguin", "elephant", "panda", "lion", "zebra", "owl", "chicken", "triceratops", "crocodile", "spider", "monkey", "mouse", "dog", "cat", "beaver", "monster", "llama", "pig"];
+        const AVATAR_STRINGS = ["unicorn", "moose", "eagle", "grizzly", "penguin", "elephant", "panda", "lion", "zebra", "owl", "chicken", "triceratops", "crocodile", "spider", "monkey", "mouse", "dog", "cat", "beaver", "monster", "llama", "pig", "dragon", "owl_guitar", "alien", "dino", "rawr", "penguin_jacket", "snail", "polar_bear", "bird", "bird_red", "horse", "monster_pink", "gnu", "koala", "wolf"];
 
         if (avatarIds) {
             if (teamId < avatarIds.length) {
