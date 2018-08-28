@@ -24,7 +24,7 @@ If a player no longer controls any regions at the start of their turn and there'
 
 Once a player controls all regions of the world they are declared the winner.
 
-## How To Set It Up To Run Locally
+## How To Set It Up To Run Locally (with Virtual Box)
 In order to run the UX locally type 
 ```
 cd ~/worldgame

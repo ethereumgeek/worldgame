@@ -50,10 +50,7 @@ class WorldGame extends Component {
         gamesForAddressCount = parseInt(gamesForAddressResp[1], 10);
         gamesForAddressList = gamesForAddressList.slice(0, gamesForAddressCount);
     }
-
-    console.log("gamesForAddressList");
-    console.log(gamesForAddressList);
-
+    
     return (
         <div>
             <MenuContainer />
