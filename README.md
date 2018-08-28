@@ -25,7 +25,7 @@ If a player no longer controls any regions at the start of their turn and there'
 Once a player controls all regions of the world they are declared the winner.
 
 ## How To Set It Up To Run Locally (with Virtual Box)
-Download virtual box here: https://drive.google.com/file/d/10-2O7PCceVBOT2nTq1PRl3pgfsPGZ5Vu/view?usp=sharing
+Download virtual box here: https://drive.google.com/file/d/1-08KeuWhN4piH8B8g9tvT4QF02y1jd6p/view?usp=sharing
 
 Login to account **"justin"** using password **"password"**.  The password for metamask is also "password".
 
