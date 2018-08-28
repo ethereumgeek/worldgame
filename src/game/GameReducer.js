@@ -9,7 +9,8 @@ const initialState = {
   dataKeysByGame: {},
   selectedOverlayId: null,
   pendingEndTurn: null,
-  pendingAttackOrMove: null
+  pendingAttackOrMove: null,
+  pendingEndOpponentsTurn: null
 }
 
 const gameReducer = (state = initialState, action) => {
@@ -24,6 +25,7 @@ if (action.type === 'SHOW_OVERLAY')
         validationMap: {}, 
         pendingEndTurn: null, 
         pendingAttackOrMove: null, 
+        pendingEndOpponentsTurn: null, 
         selectedTileRegion: null, 
         selectedTileSoldiers: null, 
         selectedTileTurnNum: null
@@ -108,6 +110,15 @@ if (action.type === 'PENDING_ATTACK_OR_MOVE')
 
     return Object.assign({}, state, {
         pendingAttackOrMove: newValue
+    });
+}
+
+if (action.type === 'PENDING_END_OPPONENTS_TURN')
+{
+    let newValue = action.payload;
+
+    return Object.assign({}, state, {
+        pendingEndOpponentsTurn: newValue
     });
 }
 

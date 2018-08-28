@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { selectTile, moveOrAttack, deployAndEndTurn, hoverTile, syncGameData, showOverlay, cacheBlockHash, declareWinner } from './GameActions'
+import { selectTile, moveOrAttack, deployAndEndTurn, endOpponentsTurn, hoverTile, syncGameData, showOverlay, cacheBlockHash, declareWinner } from './GameActions'
 import ArrowControl from './ArrowControl';
 import PropTypes from 'prop-types';
 import './Game.css';
@@ -13,6 +13,8 @@ class Game extends Component {
         // This binding is necessary to make `this` work in the callback
         this.showOverlay = this.showOverlay.bind(this);
         this.moveOrAttack = this.moveOrAttack.bind(this);
+        this.endTurn = this.endTurn.bind(this);
+        this.endOpponentsTurn = this.endOpponentsTurn.bind(this);
         this.cancelTile = this.cancelTile.bind(this);
         this.outsideClick = this.outsideClick.bind(this);
         this.hoverTile = this.hoverTile.bind(this);
@@ -159,6 +161,14 @@ class Game extends Component {
         else {
             alert("You cannot end turn until block #" + waitingForBlock);
         }
+    }
+
+    endOpponentsTurn(event, turnNum) {
+        this.props.dispatch(endOpponentsTurn(
+            this.context.drizzle, 
+            this.props.gameId, 
+            turnNum
+        ));
     }
 
     forceNextBlock(event, blockNumber) {
@@ -684,8 +694,10 @@ class Game extends Component {
     let actionSoldiersByRegion = {};
     let waitingForActions = false;
     let endTurnByBlock = null;
+    let canEndOpponentsTurnBlock = null;
     if (turnNum !== null && maxBlocksPerTurn !== null) {
         endTurnByBlock = turnNum + maxBlocksPerTurn;
+        canEndOpponentsTurnBlock = turnNum + maxBlocksPerTurn;
     }
 
     let waitingForBlock = 0;
@@ -760,6 +772,17 @@ class Game extends Component {
 
     let endTurnHours = Math.floor(endTurnMinutes/60);
     endTurnMinutes %= 60;
+
+    let canEndOpponentsTurn = false;
+    if (
+        waitingForActions === false && 
+        canEndOpponentsTurnBlock !== null && 
+        endTurnByBlock !== null && 
+        blockNumber > canEndOpponentsTurnBlock + 1 && 
+        blockNumber > endTurnByBlock
+    ) {
+        canEndOpponentsTurn = true;
+    }
 
     let { mapTiles, gapTiles } = this.getTilesFromData(regionOwnersList, regionSoldiers, avatarIds);
 
@@ -1027,6 +1050,9 @@ class Game extends Component {
                                         <button onClick={(event) => this.forceNextBlock(event, blockNumber)} className="btn" style={{marginBottom:0}}>Force next block</button>
                                         {waitingForActions && <div className="errorExplainer">You cannot end turn until block #{waitingForBlock}</div>}
                                     </div>
+                                )}
+                                {!yourTurn && playerNum !== NO_PLAYER && canEndOpponentsTurn && (
+                                    <button onClick={(event) => this.endOpponentsTurn(event, turnNum)} className="btn" style={{marginBottom:0}}>End opponent's turn since their time is up</button>
                                 )}
                             </div>
                         )}

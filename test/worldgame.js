@@ -714,6 +714,59 @@ contract('WorldGame', function(accounts) {
 
 
     /* ************************************************************************** */
+    /* Testing player can end opponent's turn if they exceed time limit.          */
+    /* ************************************************************************** */
+    it("Testing player can end opponent's turn if time limit exceeded", async function() {
+
+        let PLAYER_COUNT_END_OPPONENTS_TURN = 4;
+        let worldGameInstance = await WorldGame.deployed();
+        /* Start a new game. */
+        let tx = await worldGameInstance.newGame(
+            PLAYER_COUNT_END_OPPONENTS_TURN, 
+            20, 
+            [
+              accounts[0], accounts[1], accounts[2], accounts[3], 
+              NO_ACCOUNT, NO_ACCOUNT, NO_ACCOUNT, NO_ACCOUNT
+            ], 
+            web3.utils.asciiToHex(TEAM_AVATARS.substring(0, PLAYER_COUNT_END_OPPONENTS_TURN)),
+            {from: accounts[0]}
+        );
+
+        /* Get information from new game such as gameId and turnNum. */
+        let gameId = "";
+        let turnNum = ""; 
+        let args = getEventFromTransaction(tx, "NewGame");
+        if (args) {
+            gameId = args.gameId.toString();
+            turnNum = args.turnNum.toString();
+        }
+
+        /* Force 25 additional blocks */
+        for (let i = 0; i < 25; i++) {
+            await worldGameInstance.cacheBlockHash32(
+              "0",
+              {from: accounts[0]}
+            );
+        }
+        
+        /* End opponent's turn. */
+        let hasAssert = false;
+        try {
+            await worldGameInstance.forceEndOfTurn(
+                gameId, 
+                turnNum,
+                {from: accounts[1]}
+            );
+        }
+        catch (e) {
+            hasAssert = true;
+        }
+
+        assert.equal(hasAssert, false, "Player was not able to end opponent's turn.");     
+    });
+
+
+    /* ************************************************************************** */
     /* Testing player can only move on their turn.                                */
     /* ************************************************************************** */
     it("Player can only move on their turn", async function() {

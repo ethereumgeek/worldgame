@@ -59,8 +59,6 @@ export function startNewGame(drizzle, playerCount, input, avatarIds) {
             avatarList.push(String.fromCharCode(48 + avatarIds[i]));
         }
 
-        console.log("avatarList");
-        console.log(avatarList);
         let teamAvatars = utils.asciiToHex(avatarList.join(""));
         
         let stackId = gameInstance.methods.newGame.cacheSend(playerCount, maxBlocksPerTurn, playerAddresses, teamAvatars, {from: selectedAddress});

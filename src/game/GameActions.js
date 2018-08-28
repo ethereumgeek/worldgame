@@ -113,6 +113,25 @@ export function deployAndEndTurn(drizzle, gameId, turnNum, regionDeploy, soldier
   }
 }
 
+export function endOpponentsTurn(drizzle, gameId, turnNum) {
+  return function(dispatch) {
+    let { eth } = drizzle.web3;
+    let gameInstance = drizzle.contracts.WorldGame;
+    let { selectedAddress = "" } = eth.currentProvider.publicConfigStore.getState();
+
+    let stackId = gameInstance.methods.forceEndOfTurn.cacheSend(
+        gameId.toString(), 
+        turnNum.toString(),
+        {from: selectedAddress}
+    );
+      
+    dispatch({
+      type: 'PENDING_END_OPPONENTS_TURN',
+      payload: stackId
+    });
+  }
+}
+
 export function cacheBlockHash(drizzle, blockNum) {
   return function(dispatch) {
     let { eth } = drizzle.web3;

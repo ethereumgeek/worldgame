@@ -416,7 +416,7 @@ contract WorldGame {
     {
         GameData storage game = gameDataArray[gameId];
         require(game.turnNum == turnNum, "Wrong turn number.");
-        require(addSafe(game.turnNum, game.maxBlocksPerTurn) > block.number, "Player still has time to finish turn.");
+        require(block.number > addSafe(game.turnNum, game.maxBlocksPerTurn), "Player still has time to finish turn.");
 
         /* If there's any queued actions then execute them before ending turn. */
         if (game.actionCount > 0) {
