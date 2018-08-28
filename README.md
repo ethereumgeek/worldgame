@@ -39,6 +39,8 @@ gnome-terminal -e "ganache-cli -d -b 3"
 sudo truffle test
 ```
 
+The password is "password" for both sudo and metamask on this Virtual Box
+
 ## User Stories
 Some user stories for the World Game Dapp
 * A player opens the web app. The contract recognizes their address and show any recent games that the address has participated in.  The can click on a game to see the game details.
