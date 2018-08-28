@@ -124,7 +124,7 @@ See [avoiding_common_attacks.md](avoiding_common_attacks.md) for information on 
 See contracts/LibraryDemo.sol for a demonstration of using a library. A unit test for this library is found under test/librarydemo.js.
 
 ## Screenshot Of Game
-Here's a screenshot of the game
+Here's a screenshot of the game:
 
 <kbd><img src="https://github.com/ethereumgeek/worldgame/blob/master/preview.png?raw=true" width="600" alt="Screenshot" /></kbd>
 

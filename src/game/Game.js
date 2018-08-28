@@ -218,12 +218,12 @@ class Game extends Component {
 
     getAvatarFromTeamId(avatarIds, teamId) {
 
-        const AVATAR_STRINGS = ["unicorn", "moose", "eagle", "grizzly", "penguin", "elephant", "panda", "lion", "zebra", "owl", "chicken", "triceratops", "crocodile", "spider", "monkey", "mouse", "dog", "cat", "beaver", "monster", "llama", "pig", "dragon", "owl_guitar", "alien", "dino", "rawr", "penguin_jacket", "snail", "polar_bear", "bird", "bird_red", "horse", "monster_pink", "gnu", "koala", "wolf"];
+        const AVATAR_STRINGS = ["unicorn", "moose", "eagle", "grizzly", "penguin", "elephant", "panda", "lion", "zebra", "owl", "chicken", "triceratops", "crocodile", "spider", "monkey", "mouse", "dog", "cat", "beaver", "monster", "llama", "pig", "dragon", "owl_guitar", "alien", "dino", "rawr", "penguin_jacket", "snail", "polar_bear", "bird", "bird_red", "horse", "monster_pink", "gnu", "koala", "wolf", "baby", "giraffe", "safari_girl", "bat", "hippo", "shark", "tiger", "kitten", "teddybear", "fish", "kraken", "turtle", "frog", "ninja", "whale", "germ", "pirate_bird", "whale_pink", "ghost"];
 
         if (avatarIds) {
             if (teamId < avatarIds.length) {
                 let charCode = avatarIds.charCodeAt(teamId);
-                charCode = charCode >= 97 ? charCode - 97 : 0;
+                charCode = charCode >= 48 ? charCode - 48 : 0;
                 if (charCode < AVATAR_STRINGS.length) {
                     return AVATAR_STRINGS[charCode];
                 }
