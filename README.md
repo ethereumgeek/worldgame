@@ -25,6 +25,10 @@ If a player no longer controls any regions at the start of their turn and there'
 Once a player controls all regions of the world they are declared the winner.
 
 ## How To Set It Up To Run Locally (with Virtual Box)
+Download virtual box here: https://github.com/ethereumgeek/worldgame/blob/master/WorldGameVirtualBox.ova
+
+Password to unlock the virtual box is "password".  This is also the password for metamask.
+
 In order to run the UX locally type 
 ```
 cd ~/worldgame
@@ -40,7 +44,48 @@ gnome-terminal -e "ganache-cli -d"
 sudo truffle test
 ```
 
-The password is "password" for both sudo and metamask on this Virtual Box
+Once again, the password is **"password"** for both sudo and metamask on this Virtual Box
+
+## How To Set It Up To Run Locally (Clone From GitHub)
+Clone from GitHub and Run UX locally on Ubuntu: 
+```
+git clone https://github.com/ethereumgeek/worldgame.git
+cd worldgame
+npm install
+npm uninstall -g truffle
+npm install -g truffle@beta
+gnome-terminal -e "ganache-cli -d -b 3"
+truffle migrate --reset
+npm run start
+```
+
+Clone from GitHub and Run UX locally on MacOS: 
+```
+git clone https://github.com/ethereumgeek/worldgame.git
+cd worldgame
+npm install
+npm uninstall -g truffle
+npm install -g truffle@beta
+chmod +x run_ganache.command
+open run_ganache.command
+truffle migrate --reset
+npm run start
+```
+
+In order to run tests on Ubuntu (after cloning and npm above):
+```
+cd ~/worldgame
+gnome-terminal -e "ganache-cli -d"
+sudo truffle test
+```
+
+In order to run tests on MacOS (after cloning and npm above):
+```
+cd ~/worldgame
+chmod +x run_ganache.command
+open run_ganache.command
+truffle test
+```
 
 ## User Stories
 Some user stories for the World Game Dapp

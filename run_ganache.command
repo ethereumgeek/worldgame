@@ -1,2 +1,2 @@
 #!/bin/bash
-ganache-cli -d -b 3
+ganache-cli -d
