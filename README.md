@@ -101,7 +101,7 @@ Some user stories for the World Game Dapp
   * Non-participants can open a game in order to see the world map with which regions are owned by what players.
   
 Once a player controls all regions of the world they are declared the winner.
-<img src="https://github.com/ethereumgeek/worldgame/blob/master/preview.png?raw=true" alt="Screenshot" style="width:600px;border:1px solid #999;">
+<kbd><img src="https://github.com/ethereumgeek/worldgame/blob/master/preview.png?raw=true" width="600" alt="Screenshot" /></kbd>
 
 ## Testing Considerations
 Testing was focused on around security and restrict access issues.  In addition, one test does a full simulation of game play until a player wins.  Here's a summary of the tests written for the WorldGame contract:
