@@ -102,8 +102,6 @@ Some user stories for the World Game Dapp
   
 Once a player controls all regions of the world they are declared the winner.
 
-<kbd><img src="https://github.com/ethereumgeek/worldgame/blob/master/preview.png?raw=true" width="600" alt="Screenshot" /></kbd>
-
 ## Testing Considerations
 Testing was focused on around security and restrict access issues.  In addition, one test does a full simulation of game play until a player wins.  Here's a summary of the tests written for the WorldGame contract:
 * **Test circuit breaker.**  This tests the circuit breaker functionality that allows the contract owner to halt the ability of new games to be created.  
@@ -124,3 +122,8 @@ See [avoiding_common_attacks.md](avoiding_common_attacks.md) for information on 
 
 ## Using A Library
 See contracts/LibraryDemo.sol for a demonstration of using a library. A unit test for this library is found under test/librarydemo.js.
+
+## Screenshot Of Game
+Here's a screenshot of the game
+<kbd><img src="https://github.com/ethereumgeek/worldgame/blob/master/preview.png?raw=true" width="600" alt="Screenshot" /></kbd>
+
