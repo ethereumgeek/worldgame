@@ -33,11 +33,11 @@ export function updateValidation(validationMap) {
     }
 }
 
-export function swapAvatar(teamId) {
+export function swapAvatar(teamId, next) {
   return function(dispatch) {
       dispatch({
         type: 'SWAP_AVATAR',
-        payload: teamId
+        payload: { teamId, next }
       });
   }
 }

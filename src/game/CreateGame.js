@@ -94,8 +94,8 @@ class CreateGame extends Component {
         return AVATAR_STRINGS[avatarId];
     }
 
-    swapAvatar(event, i) {
-        this.props.dispatch(swapAvatar(i));
+    swapAvatar(event, i, next) {
+        this.props.dispatch(swapAvatar(i, next));
     }
 
     render() {
@@ -109,9 +109,13 @@ class CreateGame extends Component {
           playerAddressInputs.push(
               <div key={i} >
                   <input disabled={false} autoComplete="off" placeholder={"Player " + i} type="text" className={"inputBox" + (notValid ? " notValid" : "")} name={"player" + i} value={playerVal} onChange={this.handleInputChange} />
-                  <div onClick={(event) => this.swapAvatar(event, i-1)} style={{cursor:"pointer", width:70, height:70, marginTop:5, textAlign:"center", background:(notValid ? "#fdd" : "")}}>
-                      <img src={"/" + this.getAvatarFromTeamId(i-1) + ".png"} alt="" style={{maxWidth:70, maxHeight:70}}/>
-                  </div>
+                  <table style={{marginTop:5}}><tbody><tr>
+                      <td><img onClick={(event) => this.swapAvatar(event, i-1, false)} src={"/leftArrow.png"} alt="" style={{width:70, height:70, cursor:"pointer"}}/></td>
+                      <td onClick={(event) => this.swapAvatar(event, i-1, true)} style={{cursor:"pointer", width:70, height:70, textAlign:"center", verticalAlign:"middle", background:(notValid ? "#fdd" : "")}}>
+                          <img src={"/" + this.getAvatarFromTeamId(i-1) + ".png"} alt="" style={{maxWidth:70, maxHeight:70}}/>
+                      </td>
+                      <td><img onClick={(event) => this.swapAvatar(event, i-1, true)} src={"/rightArrow.png"} alt="" style={{width:70, height:70, cursor:"pointer"}}/></td>
+                  </tr></tbody></table>
               </div>
           );
       }
