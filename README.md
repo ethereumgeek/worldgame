@@ -35,7 +35,8 @@ npm run start
 In order to run tests type
 ```
 cd ~/worldgame
-truffle test
+gnome-terminal -e "ganache-cli -d -b 3"
+sudo truffle test
 ```
 
 ## User Stories
