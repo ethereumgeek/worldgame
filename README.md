@@ -28,7 +28,7 @@ Once a player controls all regions of the world they are declared the winner.
 In order to run the UX locally type 
 ```
 cd ~/worldgame
-gnome-terminal -e "ganache-cli -d -b 2"
+gnome-terminal -e "ganache-cli -d"
 npm run start
 ```
 
@@ -38,8 +38,6 @@ cd ~/worldgame
 gnome-terminal -e "ganache-cli -d"
 sudo truffle test
 ```
-
-It's best to run ganache-cli without the "-b" option for testing to speed things up.
 
 The password is "password" for both sudo and metamask on this Virtual Box
 
