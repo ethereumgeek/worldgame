@@ -110,11 +110,11 @@ class CreateGame extends Component {
               <div key={i} >
                   <input disabled={false} autoComplete="off" placeholder={"Player " + i} type="text" className={"inputBox" + (notValid ? " notValid" : "")} name={"player" + i} value={playerVal} onChange={this.handleInputChange} />
                   <table style={{marginTop:5}}><tbody><tr>
-                      <td><img onClick={(event) => this.swapAvatar(event, i-1, false)} src={"/leftArrow.png"} alt="" style={{width:70, height:70, cursor:"pointer"}}/></td>
+                      <td><img onClick={(event) => this.swapAvatar(event, i-1, false)} src={"/leftarrow.png"} alt="" style={{width:70, height:70, cursor:"pointer"}}/></td>
                       <td onClick={(event) => this.swapAvatar(event, i-1, true)} style={{cursor:"pointer", width:70, height:70, textAlign:"center", verticalAlign:"middle", background:(notValid ? "#fdd" : "")}}>
                           <img src={"/" + this.getAvatarFromTeamId(i-1) + ".png"} alt="" style={{maxWidth:70, maxHeight:70}}/>
                       </td>
-                      <td><img onClick={(event) => this.swapAvatar(event, i-1, true)} src={"/rightArrow.png"} alt="" style={{width:70, height:70, cursor:"pointer"}}/></td>
+                      <td><img onClick={(event) => this.swapAvatar(event, i-1, true)} src={"/rightarrow.png"} alt="" style={{width:70, height:70, cursor:"pointer"}}/></td>
                   </tr></tbody></table>
               </div>
           );

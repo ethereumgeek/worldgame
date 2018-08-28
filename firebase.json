@@ -5,6 +5,38 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
+    ],
+    "headers": [
+      {
+        "source": "/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          },
+          {
+            "key" : "Access-Control-Allow-Origin",
+            "value" : "http://localhost:3000"
+          },
+          {
+            "key" : "Access-Control-Allow-Methods",
+            "value" : "POST, GET, OPTIONS"
+          },
+          {
+            "key" : "Access-Control-Allow-Headers",
+            "value" : "Content-Type"
+          }
+        ]
+      },
+      {
+        "source": "**/*.@(jpg|jpeg|gif|png|svg|js|css|eot|otf|ttf|ttc|woff|font.css)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "max-age=604800"
+          }
+        ]
+      }
     ]
   }
 }
