@@ -30,7 +30,7 @@ In order to run the UX locally type
 cd ~/worldgame
 gnome-terminal -e "ganache-cli -d"
 truffle migrate --reset
-npm run start
+gnome-terminal -e "npm run start"
 ```
 
 In order to run tests type (it may take several minutes)
