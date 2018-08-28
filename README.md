@@ -115,10 +115,10 @@ Testing was focused on around security and restrict access issues.  In addition,
 A single test is also included the the LibraryDemo contract to show its functionality.
 
 ## Design Patterns
-See design_pattern_decisions.md for information on design pattern decisions.
+See [design_pattern_decisions.md](design_pattern_decisions.md) for information on design pattern decisions.
 
 ## Avoiding Common Attacks
-See avoiding_common_attacks.md for information on how common attacks are avoided.
+See [avoiding_common_attacks.md](avoiding_common_attacks.md) for information on how common attacks are avoided.
 
 ## Using A Library
 See contracts/LibraryDemo.sol for a demonstration of using a library. A unit test for this library is found under test/librarydemo.js.
